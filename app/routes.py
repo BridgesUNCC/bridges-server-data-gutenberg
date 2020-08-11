@@ -16,7 +16,8 @@ index = []
 
 @app.route('/index')
 def searchIndex():
-    return
+    loadIndex()
+    return count
 
 def parse(para):
     
@@ -24,7 +25,18 @@ def parse(para):
 
 def loadIndex():
     root = "app/epub"
-    return
+
+    count = 0
+
+    for subdirs, dirs, files in os.walk(root):
+        for filename in files:
+            filepath = subdirs + os.sep + filename
+
+            if filepath.endswith(".rdf"):
+                count = count + 1
+    print(count)
+
+    return count
 
 #setting up the server log
 format = logging.Formatter('%(asctime)s %(message)s')   #TODO: Logger not logging
