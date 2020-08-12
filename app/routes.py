@@ -38,7 +38,8 @@ def downloadBook():
 
     f = open(filename, "r").read()
 
-    f = gutenberg_cleaner.simple_cleaner(f)
+    if (strip == "true"):
+        f = gutenberg_cleaner.simple_cleaner(f)
 
 
     return f
