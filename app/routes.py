@@ -23,7 +23,11 @@ def searchIndex():
 def downloadBook():
     num = request.args['id']
     url = f"https://www.gutenberg.org/files/{num}/{num}.txt"
-    filename = wget.download(url, out=f"app/books/{num}.txt")
+    filename = f"app/books/{num}.txt"
+
+    if (not bookCheck(num)):
+        filename = wget.download(url, out=f"app/books/{num}.txt")
+
     f = open(filename, "r")
     return f.read()
 
@@ -45,6 +49,11 @@ def loadIndex():
     print(count)
 
     return count
+
+
+def bookCheck(num):
+    return os.path.exists(f"app/books/{num}.txt")
+
 
 #setting up the server log
 format = logging.Formatter('%(asctime)s %(message)s')   #TODO: Logger not logging
