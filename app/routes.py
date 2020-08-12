@@ -25,7 +25,7 @@ def downloadBook():
     num = request.args['id']
     #check for strip parameter
     try:
-        strip = request.args['strip']
+        strip = request.args['strip'].lower()
     except:
         strip = False
 
