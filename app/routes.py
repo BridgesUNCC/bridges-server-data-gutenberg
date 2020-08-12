@@ -11,7 +11,7 @@ import hashlib
 import pickle
 import io
 import shutil
-import gutenberg-cleaner
+import gutenberg_cleaner
 
 index = []
 
@@ -31,7 +31,7 @@ def downloadBook():
 
     f = open(filename, "r")
 
-    f = gutenberg-cleaner.simple_cleaner(f)
+    f = gutenberg_cleaner.simple_cleaner(f)
 
 
     return f.read()
