@@ -24,7 +24,8 @@ def downloadBook():
     num = request.args['id']
     url = f"https://www.gutenberg.org/files/{num}/{num}.txt"
     filename = wget.download(url, out=f"app/books/{num}.txt")
-    return "Downloaded"
+    f = open(filename, "r")
+    return r.read()
 
 def parse(para):
     
