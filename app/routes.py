@@ -23,7 +23,14 @@ def searchIndex():
 @app.route('/book')
 def downloadBook():
     num = request.args['id']
-    url = f"https://www.gutenberg.org/files/{num}/{num}.txt"
+    #check for strip parameter
+    try:
+        strip = request.args['strip']
+    except:
+        strip = false
+
+    #url = f"https://www.gutenberg.org/files/{num}/{num}.txt"
+    url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
     filename = f"app/books/{num}.txt"
 
     if (not bookCheck(num)):
