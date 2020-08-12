@@ -11,6 +11,7 @@ import hashlib
 import pickle
 import io
 import shutil
+import gutenberg-cleaner
 
 index = []
 
@@ -29,6 +30,10 @@ def downloadBook():
         filename = wget.download(url, out=f"app/books/{num}.txt")
 
     f = open(filename, "r")
+
+    f = gutenberg-cleaner.simple_cleaner(f)
+
+
     return f.read()
 
 def parse(para):
