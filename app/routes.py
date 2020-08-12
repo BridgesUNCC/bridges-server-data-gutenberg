@@ -27,7 +27,7 @@ def downloadBook():
     try:
         strip = request.args['strip'].lower()
     except:
-        strip = False
+        strip = "true"
 
     #url = f"https://www.gutenberg.org/files/{num}/{num}.txt"
     url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
