@@ -19,6 +19,13 @@ def searchIndex():
     loadIndex()
     return count
 
+@app.route('/book')
+def downloadBook():
+    num = request.args['id']
+    url = f"https://www.gutenberg.org/files/{num}/{num}.txt"
+    filename = wget.download(url, out="app/books")
+    return "Downloaded"
+
 def parse(para):
     
     return
@@ -51,9 +58,3 @@ app_log = logging.getLogger('root')
 app_log.setLevel(logging.DEBUG)
 
 app_log.addHandler(my_handler)
-
-try:
-    with open("lru.txt", "rb") as fp:
-        LRU = pickle.load(fp)
-except:
-    pass
