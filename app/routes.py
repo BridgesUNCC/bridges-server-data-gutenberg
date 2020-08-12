@@ -34,7 +34,7 @@ def downloadBook():
     f = gutenberg_cleaner.simple_cleaner(f)
 
 
-    return f.read()
+    return f
 
 def parse(para):
     
