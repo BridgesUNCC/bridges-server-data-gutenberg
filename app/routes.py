@@ -29,7 +29,7 @@ def downloadBook():
     if (not bookCheck(num)):
         filename = wget.download(url, out=f"app/books/{num}.txt")
 
-    f = open(filename, "r")
+    f = open(filename, "r").read()
 
     f = gutenberg_cleaner.simple_cleaner(f)
 
