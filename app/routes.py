@@ -114,7 +114,7 @@ def bookCheck(num):
 
 def loadIndex():
     try:
-        with open("index.json", "rb") as fp:
+        with open("index.json") as fp:
             index = json.load(fp)
     except:
         parseIndex()
