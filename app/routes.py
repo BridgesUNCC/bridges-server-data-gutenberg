@@ -19,7 +19,7 @@ index = []
 @app.route('/index')
 def searchIndex():
     count = loadIndex()
-    return count
+    return str(count)
 
 @app.route('/book')
 def downloadBook():
@@ -65,12 +65,16 @@ def loadIndex():
                 root = tree.getroot()
                 temp.append(root)
 
+                for child in root:
+                    if (child.tag == 'pgterms:ebook'):
+                        temp.append(child.attrib)
+
 
 
                 index.append(temp)
 
 
-    print(index[18][0].tag)
+    print(index[18][1].tag)
 
     return count
 
