@@ -59,7 +59,6 @@ def loadIndex():
 
             if filepath.endswith(".rdf"):
                 temp = []
-                count = count + 1
                 #TODO: Parse XML Files into index array
                 tree = ET.parse(filepath)
                 root = tree.getroot()
@@ -68,8 +67,8 @@ def loadIndex():
                 for child in root:
                     if (child.tag.endswith("ebook")):
                         temp.append(child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
-                        print(child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
-
+                        #print(child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
+                        count = count + 1
 
 
                 index.append(temp)
