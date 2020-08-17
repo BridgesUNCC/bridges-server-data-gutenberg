@@ -67,8 +67,8 @@ def loadIndex():
 
                 for child in root:
                     if (child.tag.endswith("ebook")):
-                        temp.append(child.attrib)
-                        print(f"{child.tag} | {child.attrib}")
+                        temp.append(child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
+                        print(child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
 
 
 
