@@ -70,7 +70,7 @@ def loadIndex():
 
                 if (math.floor((count/62690)*100) > pro):
                     pro = pro + 10
-                    print("f{pro}%")
+                    print(f"{pro}%")
 
 
                 # ID, TITLE, LANG, ISSUED, CREATORS
