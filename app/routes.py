@@ -66,9 +66,9 @@ def loadIndex():
                 temp.append(root)
 
                 for child in root:
-                    print(f"{child.tag} | {child.attrib}")
                     if (child.tag.endswith("ebook")):
                         temp.append(child.attrib)
+                        print(f"{child.tag} | {child.attrib}")
 
 
 
