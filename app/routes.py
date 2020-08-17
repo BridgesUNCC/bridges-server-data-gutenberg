@@ -66,7 +66,7 @@ def loadIndex():
                 temp.append(root)
 
                 for child in root:
-                    print(child.tag)
+                    print(f"{child.tag} | {child.attrib}")
                     if (child.tag == 'pgterms:ebook'):
                         temp.append(child.attrib)
 
