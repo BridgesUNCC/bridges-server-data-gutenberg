@@ -18,7 +18,7 @@ index = []
 
 @app.route('/index')
 def searchIndex():
-    loadIndex()
+    count = loadIndex()
     return count
 
 @app.route('/book')
@@ -70,7 +70,7 @@ def loadIndex():
                 index.append(temp)
 
 
-    print(index[8][0])
+    print(index[18][0].tag)
 
     return count
 
