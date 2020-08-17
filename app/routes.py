@@ -19,7 +19,7 @@ index = []
 @app.route('/index')
 def searchIndex():
     count = loadIndex()
-    return index
+    return (' '.join(index))
 
 @app.route('/book')
 def downloadBook():
@@ -52,6 +52,8 @@ def loadIndex():
     root = "app/epub"
 
     count = 0
+
+    print("Index ")
 
     for subdirs, dirs, files in os.walk(root):
         for filename in files:
