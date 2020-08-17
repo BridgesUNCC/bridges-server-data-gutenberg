@@ -19,7 +19,7 @@ index = []
 @app.route('/index')
 def searchIndex():
     count = loadIndex()
-    return str(count)
+    return index
 
 @app.route('/book')
 def downloadBook():
@@ -58,7 +58,8 @@ def loadIndex():
             filepath = subdirs + os.sep + filename
 
             if filepath.endswith(".rdf"):
-                temp = []
+                # ID, TITLE, LANG, ISSUED, CREATORS
+                temp = [None, None, None, None, []]
                 #TODO: Parse XML Files into index array
                 tree = ET.parse(filepath)
                 root = tree.getroot()
@@ -66,14 +67,16 @@ def loadIndex():
 
                 for child in root:
                     if (child.tag.endswith("ebook")):
-                        temp.append(child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
+                        temp[0] = (child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
                         #print(child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
                         count = count + 1
                         for smallerchild in child:
                             if (smallerchild.tag.endswith("title")):
-                                print(smallerchild.text)
-                                temp.append(smallerchild.text)
-
+                                temp[1] = (smallerchild.text)
+                            elif (smallerchild.tag.endswith("issued")):
+                                temp[3] = (smallerchild.text)
+                            elif (False):
+                                temp[2] = None
                 index.append(temp)
 
 
