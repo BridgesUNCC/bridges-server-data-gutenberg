@@ -104,8 +104,8 @@ def parseIndex():
 
     print("Parse Complete")
     print(f"Total Text Count: {count}")
-    with open('index.json', 'w') as f:
-        json.dump(index, f)
+    #with open('index.json', 'w') as f:
+        #json.dump(index, f)
     return
 
 
