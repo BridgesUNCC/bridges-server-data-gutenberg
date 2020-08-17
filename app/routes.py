@@ -74,7 +74,7 @@ def loadIndex():
                 index.append(temp)
 
 
-    print(index[18][1].tag)
+    print(index[18])
 
     return count
 
