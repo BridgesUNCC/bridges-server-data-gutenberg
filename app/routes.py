@@ -69,7 +69,10 @@ def loadIndex():
                         temp.append(child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
                         #print(child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
                         count = count + 1
-
+                        for smallerchild in child:
+                            if (smallerchild.tag.endswith("title")):
+                                print(smallerchild.attrib.text)
+                                temp.append(smallerchild.attrib.text)
 
                 index.append(temp)
 
