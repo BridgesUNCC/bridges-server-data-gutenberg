@@ -16,7 +16,7 @@ index = []
 
 @app.route('/index')
 def searchIndex():
-    count = parseIndex()
+    parseIndex()
     output = ""
     try:
         # ToDo: set up type input 
@@ -106,17 +106,17 @@ def parseIndex():
     print(f"Total Text Count: {count}")
     with open('index.json', 'w') as f:
         json.dump(index, f)
-    return count
+    return
 
 
 def bookCheck(num):
     return os.path.exists(f"app/books/{num}.txt")
 
 def loadIndex():
-    try:
+    if (os.path.isfile("index.json")):
         with open("index.json") as fp:
             index = json.load(fp)
-    except:
+    else:
         parseIndex()
     return
 
