@@ -23,7 +23,7 @@ def searchIndex():
     output = ""
     for x in index:
         output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
-    return x
+    return output
 
 @app.route('/book')
 def downloadBook():
@@ -58,7 +58,7 @@ def loadIndex():
     count = 0
 
     print("Index Parsing Started:")
-    print("Progress", end = '')
+    print("Progress")
     pro = 0
     
 
@@ -68,9 +68,9 @@ def loadIndex():
 
             if filepath.endswith(".rdf"):
 
-                if (math.floor((count/62690)*10) > pro):
-                    pro = pro + 1
-                    print(".", end = '')
+                if (math.floor((count/62690)*100) > pro):
+                    pro = pro + 10
+                    print("f{pro}%")
 
 
                 # ID, TITLE, LANG, ISSUED, CREATORS
