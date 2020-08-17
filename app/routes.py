@@ -16,7 +16,6 @@ index = []
 
 @app.route('/index')
 def searchIndex():
-    parseIndex()
     output = ""
     try:
         # ToDo: set up type input 
