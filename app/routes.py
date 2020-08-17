@@ -12,6 +12,7 @@ import pickle
 import io
 import shutil
 import gutenberg_cleaner
+import xml.etree.ElementTree as ET
 
 index = []
 
@@ -29,7 +30,6 @@ def downloadBook():
     except:
         strip = "true"
 
-    #url = f"https://www.gutenberg.org/files/{num}/{num}.txt"
     url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
     filename = f"app/books/{num}.txt"
 
@@ -58,8 +58,19 @@ def loadIndex():
             filepath = subdirs + os.sep + filename
 
             if filepath.endswith(".rdf"):
+                temp = []
                 count = count + 1
-    print(count)
+                #TODO: Parse XML Files into index array
+                tree = ET.parse(filepath)
+                root = tree.getroot()
+                temp.append(root)
+
+
+
+                index.append(temp)
+
+
+    print(index[8][0])
 
     return count
 
