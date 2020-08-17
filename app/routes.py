@@ -71,8 +71,8 @@ def loadIndex():
                         count = count + 1
                         for smallerchild in child:
                             if (smallerchild.tag.endswith("title")):
-                                print(smallerchild)
-                                temp.append(smallerchild)
+                                print(smallerchild.text)
+                                temp.append(smallerchild.text)
 
                 index.append(temp)
 
