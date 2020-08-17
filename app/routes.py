@@ -5,24 +5,22 @@ import logging
 from logging.handlers import RotatingFileHandler
 import wget
 import os
-import subprocess
+import json
 import math
-import hashlib
-import pickle
 import io
 import shutil
 import gutenberg_cleaner
-import math
 import xml.etree.ElementTree as ET
 
 index = []
 
 @app.route('/index')
 def searchIndex():
-    count = loadIndex()
+    count = parseIndex()
     output = ""
     try:
-        output = lookup(request.args['id'])
+        # ToDo: set up type input 
+        output = lookup(request.args['id'], id)
     except:
         for x in index:
             output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
@@ -52,13 +50,18 @@ def downloadBook():
 
     return f
 
-def lookup(para):
+def lookup(para, ind):
+    if (ind == "id"):
+        t = 0
+    elif (ind == "title"):
+        t = 1
+
     for x in index:
-        if (x[0] == para):
+        if (x[t] == para):
             return f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}]"
     return "No record found"
 
-def loadIndex():
+def parseIndex():
     root = "app/epub"
 
     count = 0
@@ -101,12 +104,21 @@ def loadIndex():
 
     print("Parse Complete")
     print(f"Total Text Count: {count}")
+    with open('index.json', 'w') as f:
+        json.dumps(index, f)
     return count
 
 
 def bookCheck(num):
     return os.path.exists(f"app/books/{num}.txt")
 
+def loadIndex():
+    try:
+        with open("index.json", "rb") as fp:
+            index = json.load(fp)
+    except:
+        parseIndex()
+    return
 
 #setting up the server log
 format = logging.Formatter('%(asctime)s %(message)s')   #TODO: Logger not logging
@@ -121,3 +133,6 @@ app_log = logging.getLogger('root')
 app_log.setLevel(logging.DEBUG)
 
 app_log.addHandler(my_handler)
+
+
+loadIndex()
