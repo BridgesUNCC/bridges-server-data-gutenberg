@@ -22,7 +22,7 @@ def searchIndex():
     count = loadIndex()
     output = ""
     for x in index:
-        output = output + x
+        output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
     return x
 
 @app.route('/book')
@@ -57,7 +57,7 @@ def loadIndex():
 
     count = 0
 
-    print("Index Parsing Started...")
+    print("Index Parsing Started:")
     print("Progress", end = '')
     pro = 0
     
