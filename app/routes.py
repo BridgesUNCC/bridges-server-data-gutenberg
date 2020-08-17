@@ -21,8 +21,12 @@ index = []
 def searchIndex():
     count = loadIndex()
     output = ""
-    for x in index:
-        output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
+    try:
+        output = lookup(request.args['id'])
+    except:
+        for x in index:
+            output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
+    
     return output
 
 @app.route('/book')
@@ -48,9 +52,11 @@ def downloadBook():
 
     return f
 
-def parse(para):
-    
-    return
+def lookup(para):
+    for x in index:
+        if (x[0] == para):
+            return f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}]"
+    return "No record found"
 
 def loadIndex():
     root = "app/epub"
