@@ -19,7 +19,7 @@ def searchIndex():
     output = ""
     try:
         # ToDo: set up type input 
-        output = lookup(request.args['id'], id)
+        output = lookup(request.args['id'], "id")
     except:
         for x in index:
             output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
