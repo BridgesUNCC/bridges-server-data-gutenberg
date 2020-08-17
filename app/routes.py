@@ -94,7 +94,7 @@ def loadIndex():
                 index.append(temp)
 
     print("Parse Complete")
-
+    print(f"Total Text Count: {count}")
     return count
 
 
