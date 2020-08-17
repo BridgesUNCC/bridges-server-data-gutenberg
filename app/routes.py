@@ -12,6 +12,7 @@ import pickle
 import io
 import shutil
 import gutenberg_cleaner
+import math
 import xml.etree.ElementTree as ET
 
 index = []
@@ -19,7 +20,10 @@ index = []
 @app.route('/index')
 def searchIndex():
     count = loadIndex()
-    return (' '.join(index))
+    output = ""
+    for x in index:
+        output = output + x
+    return x
 
 @app.route('/book')
 def downloadBook():
@@ -53,13 +57,22 @@ def loadIndex():
 
     count = 0
 
-    print("Index ")
+    print("Index Parsing Started...")
+    print("Progress", end = '')
+    pro = 0
+    
 
     for subdirs, dirs, files in os.walk(root):
         for filename in files:
             filepath = subdirs + os.sep + filename
 
             if filepath.endswith(".rdf"):
+
+                if (math.floor((count/62690)*10) > pro):
+                    pro = pro + 1
+                    print(".", end = '')
+
+
                 # ID, TITLE, LANG, ISSUED, CREATORS
                 temp = [None, None, None, None, []]
                 #TODO: Parse XML Files into index array
@@ -81,8 +94,7 @@ def loadIndex():
                                 temp[2] = None
                 index.append(temp)
 
-
-    print(index[18])
+    print("Parse Complete")
 
     return count
 
