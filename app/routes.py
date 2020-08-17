@@ -82,8 +82,7 @@ def loadIndex():
 
                 for child in root:
                     if (child.tag.endswith("ebook")):
-                        temp[0] = (child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
-                        #print(child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about"))
+                        temp[0] = (child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about").split('/')[1])
                         count = count + 1
                         for smallerchild in child:
                             if (smallerchild.tag.endswith("title")):
