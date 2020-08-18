@@ -99,6 +99,14 @@ def parseIndex():
                                 temp[3] = (smallerchild.text)
                             elif (smallerchild.tag.endswith("language")):
                                 temp[2] = smallerchild[0][0].text
+                            elif (smallerchild.tag.endswith("creator")):
+                                creators = []
+                                for agent in smallerchild:
+                                    for terms in agent:
+                                        if (terms.tag.endswith("name")):
+                                            creators.append(terms.text)
+                                
+                                temp[4] = creators
                 index.append(temp)
 
     print("Parse Complete")
