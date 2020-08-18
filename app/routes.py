@@ -97,8 +97,8 @@ def parseIndex():
                                 temp[1] = (smallerchild.text)
                             elif (smallerchild.tag.endswith("issued")):
                                 temp[3] = (smallerchild.text)
-                            elif (False):
-                                temp[2] = None
+                            elif (smallerchild.tag.endswith("language")):
+                                temp[2] = smallerchild[0][0].text()
                 index.append(temp)
 
     print("Parse Complete")
