@@ -37,8 +37,10 @@ def downloadBook():
     url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
     filename = f"app/books/{num}.txt"
 
+    print(f"{url}    |    {filename}")
+
     if (not bookCheck(num)):
-        filename = wget.download(url, out=f"app/{num}.txt")
+        filename = wget.download(url, out=filename)
         print(filename)
     print("3")
 
