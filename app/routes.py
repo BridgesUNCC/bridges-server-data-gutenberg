@@ -10,6 +10,7 @@ import math
 import io
 import shutil
 import gutenberg_cleaner
+import gutenberg
 import xml.etree.ElementTree as ET
 import requests
 
@@ -41,7 +42,9 @@ def downloadBook():
     print(f"{url}    |    {filename}")
 
     if (not bookCheck(num)):
-        data = requests.get(url).content
+        #data = requests.get(url).content
+        data = gutenberg.aquire.load_etext(num)
+        return data
         open(filename, 'wb').write(data)
 
 
