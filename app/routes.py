@@ -11,6 +11,7 @@ import io
 import shutil
 import gutenberg_cleaner
 import xml.etree.ElementTree as ET
+import requests
 
 index = []
 
@@ -40,8 +41,9 @@ def downloadBook():
     print(f"{url}    |    {filename}")
 
     if (not bookCheck(num)):
-        filename = wget.download(url, out=filename)
-    print("3")
+        data = requests.get(url).content
+        open(filename, 'wb').write(data)
+
 
     LRU(num)
     f = open(filename, "r").read()
@@ -143,10 +145,10 @@ def LRU(key):
         lru.remove(key)
     lru.insert(0, key)
 
-    if (lru.len == 120):
-        if (os.path.isfile(f"app/books/{lru[lru.len - 1]}.txt")):
-            os.remove(f"app/books/{lru[lru.len - 1]}.txt")
-            del lru[lru.len - 1]
+    if (len(lru) == 200):
+        if (os.path.isfile(f"app/books/{lru[len(lru) - 1]}.txt")):
+            os.remove(f"app/books/{lru[len(lru) - 1]}.txt")
+            del lru[len(lru) - 1]
 
     #save lru
     f = open("lru.json", "w")
