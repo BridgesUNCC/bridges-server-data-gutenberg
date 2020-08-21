@@ -34,7 +34,7 @@ def downloadBook():
         strip = request.args['strip'].lower()
     except:
         strip = "true"
-
+    print("errrr")
     url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
     filename = f"app/books/{num}.txt"
 
@@ -129,6 +129,7 @@ def loadIndex():
 
 def LRU(key):
     lru = []
+    print("LRU")
     #load lru
     if os.path.isfile("lru.json"):
         with open("lru.json") as f:
