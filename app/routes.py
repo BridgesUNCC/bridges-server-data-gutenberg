@@ -40,12 +40,12 @@ def downloadBook():
     url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
     filename = f"app/books/{num}.txt"
 
-    print(f"{url}    |    {filename}")
 
     if (not bookCheck(num)):
         #data = requests.get(url).content
         data = load_etext(num)
-        open(filename, 'w').write(data)
+
+        open(filename, "w").write(data).close()
 
 
     LRU(num)
