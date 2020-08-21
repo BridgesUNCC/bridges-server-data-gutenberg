@@ -31,7 +31,7 @@ def searchIndex():
 
 @app.route('/book')
 def downloadBook():
-    num = request.args['id']
+    num = int(request.args['id'])
     #check for strip parameter
     try:
         strip = request.args['strip'].lower()
