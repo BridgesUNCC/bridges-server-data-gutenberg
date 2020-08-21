@@ -41,7 +41,6 @@ def downloadBook():
 
     if (not bookCheck(num)):
         filename = wget.download(url, out=filename)
-        print(filename)
     print("3")
 
     LRU(num)
@@ -130,6 +129,8 @@ def loadIndex():
     return
 
 
+
+
 def LRU(key):
     lru = []
     #load lru
@@ -142,10 +143,10 @@ def LRU(key):
         lru.remove(key)
     lru.insert(0, key)
 
-    if (lru.len() == 120):
-        if (os.path.isfile(f"app/books/{lru[lru.len() - 1]}.txt")):
-            os.remove(f"app/books/{lru[lru.len() - 1]}.txt")
-            del lru[lru.len() - 1]
+    if (lru.len == 120):
+        if (os.path.isfile(f"app/books/{lru[lru.len - 1]}.txt")):
+            os.remove(f"app/books/{lru[lru.len - 1]}.txt")
+            del lru[lru.len - 1]
 
     #save lru
     f = open("lru.json", "w")
