@@ -45,7 +45,7 @@ def downloadBook():
     if (not bookCheck(num)):
         #data = requests.get(url).content
         data = load_etext(num)
-        open(filename, 'wb').write(data)
+        open(filename, 'w').write(data)
 
 
     LRU(num)
