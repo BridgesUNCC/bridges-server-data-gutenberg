@@ -45,7 +45,7 @@ def downloadBook():
         #data = requests.get(url).content
         data = load_etext(num)
 
-        open(filename, "w").write(data).close()
+        open(filename, "w").write(data)
 
 
     LRU(num)
