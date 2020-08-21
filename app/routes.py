@@ -41,6 +41,7 @@ def downloadBook():
     if (not bookCheck(num)):
         filename = wget.download(url, out=f"app/books/{num}.txt")
 
+    LRU(num)
     f = open(filename, "r").read()
 
     if (strip == "true"):
@@ -114,7 +115,6 @@ def parseIndex():
         #json.dump(index, f)
     return
 
-
 def bookCheck(num):
     return os.path.exists(f"app/books/{num}.txt")
 
@@ -124,6 +124,33 @@ def loadIndex():
             index = json.load(fp)
     else:
         parseIndex()
+    return
+
+
+def LRU(key):
+    lru = []
+    #load lru
+    if os.path.isfile("lru.json"):
+        with open("lru.json") as f:
+            lru = json.loads(f)
+
+    #checks if key is in LRU list
+    if (key in lru):
+        lru.remove(key)
+    lru.insert(0, key)
+
+    if (lru.len() == 120):
+        if (os.path.isfile(f"app/books/{lru[lru.len() - 1]}.txt")):
+            os.remove(f"app/books/{lru[lru.len() - 1]}.txt")
+            del lru[lru.len() - 1]
+
+    #save lru
+    f = open("lru.json", "w")
+    f.write(json.dumps(lru))
+    f.close()
+    return
+
+def updateLRU(key):
     return
 
 #setting up the server log
