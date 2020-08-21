@@ -43,7 +43,7 @@ def downloadBook():
 
     if (not bookCheck(num)):
         #data = requests.get(url).content
-        data = gutenberg.aquire.load_etext(num)
+        data = gutenberg.acquire.load_etext(num)
         return data
         open(filename, 'wb').write(data)
 
