@@ -138,7 +138,7 @@ def LRU(key):
     #load lru
     if os.path.isfile("lru.json"):
         with open("lru.json") as f:
-            lru = json.loads(f)
+            lru = json.load(f)
 
     #checks if key is in LRU list
     if (key in lru):
