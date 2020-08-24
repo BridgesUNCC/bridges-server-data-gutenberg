@@ -117,7 +117,8 @@ def parseIndex():
                                 
                                 
                 index.append(temp)
-
+                root.clear()
+                
     print("Parse Complete")
     print(f"Total Text Count: {count}")
 
