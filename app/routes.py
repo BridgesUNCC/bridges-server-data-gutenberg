@@ -123,6 +123,7 @@ def parseIndex():
 
     with open('index.data', 'wb') as f:
         pickle.dump(index, f)
+        print("Saved index to local file")
     return
 
 def bookCheck(num):
@@ -132,6 +133,7 @@ def loadIndex():
     if (os.path.isfile("index.data")):
         with open("index.data", 'rb') as fp:
             index = pickle.load(fp)
+            print("Loaded index from local file")
     else:
         parseIndex()
     return
