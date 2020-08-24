@@ -45,8 +45,9 @@ def downloadBook():
         #data = requests.get(url).content
         data = load_etext(num)
 
-        open(filename, "w").write(data)
-
+        x = open(filename, "w")
+        x.write(data)
+        x.close()
 
     LRU(num)
     f = open(filename, "r").read()
@@ -118,8 +119,10 @@ def parseIndex():
 
     print("Parse Complete")
     print(f"Total Text Count: {count}")
-    #with open('index.json', 'w') as f:
-        #json.dump(index, f)
+    
+    export_json = json.dumps(index)
+    with open('index.json', 'w') as f:
+        json.dump(export_json, f)
     return
 
 def bookCheck(num):
@@ -132,9 +135,6 @@ def loadIndex():
     else:
         parseIndex()
     return
-
-
-
 
 def LRU(key):
     lru = []
@@ -159,8 +159,6 @@ def LRU(key):
     f.close()
     return
 
-def updateLRU(key):
-    return
 
 #setting up the server log
 format = logging.Formatter('%(asctime)s %(message)s')   #TODO: Logger not logging
