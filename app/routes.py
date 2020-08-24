@@ -119,7 +119,7 @@ def parseIndex():
 
     print("Parse Complete")
     print(f"Total Text Count: {count}")
-    
+
     export_json = json.dumps(index)
     with open('index.json', 'w') as f:
         json.dump(export_json, f)
@@ -175,4 +175,4 @@ app_log.setLevel(logging.DEBUG)
 app_log.addHandler(my_handler)
 
 
-#loadIndex()
+loadIndex()
