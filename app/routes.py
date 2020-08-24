@@ -9,6 +9,7 @@ import json
 import math
 import io
 import shutil
+import pickle
 import gutenberg_cleaner
 import gutenberg
 from gutenberg.acquire import load_etext
@@ -120,18 +121,17 @@ def parseIndex():
     print("Parse Complete")
     print(f"Total Text Count: {count}")
 
-    export_json = json.dumps(index)
-    with open('index.json', 'w') as f:
-        json.dump(export_json, f)
+    with open('index.data', 'wb') as f:
+        pickle.dump(index, f)
     return
 
 def bookCheck(num):
     return os.path.exists(f"app/books/{num}.txt")
 
 def loadIndex():
-    if (os.path.isfile("index.json")):
-        with open("index.json") as fp:
-            index = json.load(fp)
+    if (os.path.isfile("index.data")):
+        with open("index.data", 'rb') as fp:
+            index = pickle.load(fp)
     else:
         parseIndex()
     return
