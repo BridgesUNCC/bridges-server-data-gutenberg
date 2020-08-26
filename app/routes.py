@@ -82,9 +82,15 @@ def lookup(para, ind):
 
     found = []
 
-    for x in index:
-        if (x[t] == para):
-            found.append(x)
+    if t == 4:
+        for x in index:
+            for auth in x[t]:
+                if (para == auth):
+                    found.append(x)
+    else:
+        for x in index:
+            if (x[t] == para):
+                found.append(x)
     return found
     
 
