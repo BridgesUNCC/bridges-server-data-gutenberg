@@ -156,16 +156,30 @@ def parseIndex():
     with open('index.json', 'w') as outfile:
         json.dump(store, outfile)
 
+    store = None
+    subStore = None
+
     return
 
 def bookCheck(num):
     return os.path.exists(f"app/books/{num}.txt")
 
 def loadIndex():
-    if (os.path.isfile("index.data")):
-        with open("index.data", 'rb') as fp:
-            index = pickle.load(fp)
-            print("Loaded index from local file")
+    if (os.path.isfile("index.json")):
+        with open("index.json", 'r') as fp:
+            indexJSON = json.loads(fp)
+            for x in indexJSON:
+                temp = []
+                temp.append(x['id'])
+                temp.append(x['title'])
+                temp.append(x['language'])
+                temp.append(x['date'])
+                temp.append(x['authors'])
+
+                index.append(temp)
+            indexJSON = {}
+            fp.close
+        print("Loaded index from local file")
     else:
         parseIndex()
     return
