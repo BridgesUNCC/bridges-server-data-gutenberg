@@ -170,7 +170,6 @@ def loadIndex():
             indexJSON = json.load(fp)
             for key, value in indexJSON.items():
                 temp = []
-                print(json.dumps(value))
                 temp.append(value['id'])
                 temp.append(value['title'])
                 temp.append(value['language'])
