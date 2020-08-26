@@ -146,7 +146,15 @@ def parseIndex():
     print("Parse Complete")
     print(f"Total Text Count: {count}")
 
-    print(json.dumps(index))
+
+    store = {}
+
+    for x in index:
+        subStore = {'id' : x[0], 'title': x[1], 'language': x[2], 'date': x[3], 'authors': x[4]}
+        store[str(x[0])] = subStore
+
+    with open('index.json', 'w') as outfile:
+        json.dump(store, outfile)
 
     return
 
