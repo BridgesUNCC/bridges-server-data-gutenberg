@@ -23,7 +23,9 @@ def searchIndex():
     output = ""
     try:
         # ToDo: set up type input 
-        output = lookup(request.args['id'], "id")
+        data = lookup(request.args['search'], request.args['filter'])
+        for x in data:
+            output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
     except:
         for x in index:
             output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
@@ -59,16 +61,32 @@ def downloadBook():
 
     return f
 
+@app.route('/meta')
+def metaData():
+
+    return meta
+
+
 def lookup(para, ind):
     if (ind == "id"):
         t = 0
     elif (ind == "title"):
         t = 1
+    elif (ind == "language"):
+        t = 2
+    elif (ind == "date"):
+        t = 3
+    elif (ind == "author"):
+        t = 4
+
+
+    found = []
 
     for x in index:
         if (x[t] == para):
-            return f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}]"
-    return "No record found"
+            found.append(x)
+    return found
+    
 
 def parseIndex():
     root = "app/epub"
@@ -117,8 +135,8 @@ def parseIndex():
                                 
                                 
                 index.append(temp)
-                root.clear()
-                
+                root.clear() #GARBAGE COLLECTION
+
     print("Parse Complete")
     print(f"Total Text Count: {count}")
 
