@@ -146,9 +146,8 @@ def parseIndex():
     print("Parse Complete")
     print(f"Total Text Count: {count}")
 
-    #with open('index.data', 'wb') as f:
-        #pickle.dump(index, f)
-        #print("Saved index to local file")
+    print(json.dumps(index))
+
     return
 
 def bookCheck(num):
