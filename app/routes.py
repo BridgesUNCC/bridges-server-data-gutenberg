@@ -168,14 +168,14 @@ def loadIndex():
     if (os.path.isfile("index.json")):
         with open("index.json") as fp:
             indexJSON = json.load(fp)
-            for x in indexJSON:
+            for key, value in indexJSON.items():
                 temp = []
-                print(json.dumps(x))
-                temp.append(x['id'])
-                temp.append(x['title'])
-                temp.append(x['language'])
-                temp.append(x['date'])
-                temp.append(x['authors'])
+                print(json.dumps(value))
+                temp.append(value['id'])
+                temp.append(value['title'])
+                temp.append(value['language'])
+                temp.append(value['date'])
+                temp.append(value['authors'])
 
                 index.append(temp)
             indexJSON = {}
