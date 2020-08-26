@@ -166,7 +166,7 @@ def bookCheck(num):
 
 def loadIndex():
     if (os.path.isfile("index.json")):
-        with open("index.json", 'r') as fp:
+        with open("index.json") as fp:
             indexJSON = json.loads(fp)
             for x in indexJSON:
                 temp = []
