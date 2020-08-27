@@ -15,6 +15,8 @@ import gutenberg
 from gutenberg.acquire import load_etext
 import xml.etree.ElementTree as ET
 import requests
+import difflib
+import re
 
 index = []
 
@@ -85,11 +87,13 @@ def lookup(para, ind):
     if t == 4:
         for x in index:
             for auth in x[t]:
-                if (para == auth):
+                #if (para == auth):
+                if (difflib.SequenceMatcher(None, stripSearch(para), stripSearch(auth)).ratio() >= .85):
                     found.append(x)
     else:
         for x in index:
-            if (x[t] == para):
+            #if (x[t] == para):
+            if (difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).ratio() >= .85):
                 found.append(x)
     return found
     
@@ -207,6 +211,10 @@ def LRU(key):
     f.close()
     return
 
+def stripSearch(regFilter):
+    regFilter = regFilter.lower()
+    temp = re.sub('[\'\n:;,./?!&]', '', regFilter)
+    return temp
 
 #setting up the server log
 format = logging.Formatter('%(asctime)s %(message)s')   #TODO: Logger not logging
