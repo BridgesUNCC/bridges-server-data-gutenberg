@@ -93,8 +93,9 @@ def lookup(para, ind):
     else:
         for x in index:
             #if (x[t] == para):
-            print(difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).ratio())
-            if (difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).ratio() >= .95):
+            ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).ratio()
+            if (ratio >= .95):
+                print(ratio)
                 found.append(x)
     return found
     
