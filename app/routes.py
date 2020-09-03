@@ -100,7 +100,8 @@ def lookup(para, ind):
             if (ratio >= .95):
                 print(ratio)
                 found.append(x)
-        print("Time: %s seconds" % (time.time() - start_time) )
+        ti = (time.time() - start_time)
+        print(f"Time: {ti} seconds")
     return found
     
 
