@@ -7,6 +7,7 @@ import wget
 import os
 import json
 import math
+import time
 import io
 import shutil
 import pickle
@@ -29,8 +30,9 @@ def searchIndex():
         for x in data:
             output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
     except:
-        for x in index:
-            output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
+        print("ERROR")
+        #for x in index:
+            #output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
     
     return output
 
@@ -91,12 +93,14 @@ def lookup(para, ind):
                 if (difflib.SequenceMatcher(None, stripSearch(para), stripSearch(auth)).ratio() >= .95):
                     found.append(x)
     else:
+        start_time = time.time()
         for x in index:
             #if (x[t] == para):
-            ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).ratio()
+            ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).quick_ratio()
             if (ratio >= .95):
                 print(ratio)
                 found.append(x)
+        print("Time: %s seconds" % (time.time() - start_time) )
     return found
     
 
