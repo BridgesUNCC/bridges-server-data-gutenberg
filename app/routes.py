@@ -29,8 +29,8 @@ def searchIndex():
         data = lookup(request.args['search'], request.args['filter'])
         for x in data:
             output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
-    except:
-        print("ERROR")
+    except Exception as e:
+        print(e)
         #for x in index:
             #output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
     
