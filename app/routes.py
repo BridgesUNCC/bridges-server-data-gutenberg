@@ -96,7 +96,7 @@ def lookup(para, ind):
         start_time = time.time()
         for x in index:
             #if (x[t] == para):
-            ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).quick_ratio()
+            ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).quick_ratio() 
             if (ratio >= .95):
                 print(ratio)
                 found.append(x)
