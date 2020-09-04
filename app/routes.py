@@ -93,13 +93,17 @@ def lookup(para, ind):
     if t == 4:
         for x in index:
             for auth in x[t]:
-                #if (para == auth):
-                if (difflib.SequenceMatcher(None, stripSearch(para), stripSearch(auth)).ratio() >= .90):
+                flipAuth = stripSearch(auth).split(" ")
+                flipAuthStr = f"{flipAuth[1]} {flipAuth[0]}"
+                if (difflib.SequenceMatcher(None, stripSearch(para), stripSearch(auth)).quick_ratio() >= .90 or difflib.SequenceMatcher(None, stripSearch(para), stripSearch(flipAuthStr)).quick_ratio() >= .90):
                     found.append(x)
+                else:
+                    for i in stripSearch(auth).split(' '):
+                        if stripSearch(para) == stripSearch(i):
+                            found.append(x)
     else:
         start_time = time.time()
         for x in index:
-            #if (x[t] == para):
             try:
                 ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).quick_ratio()
                 for i in x[t].split(" "):
@@ -109,7 +113,6 @@ def lookup(para, ind):
             except:
                 ratio = 0
             if (ratio >= .90):
-                #print(ratio)
                 found.append(x)
         ti = (time.time() - start_time)
         print(f"Time: {ti} seconds")
