@@ -103,7 +103,7 @@ def lookup(para, ind):
             try:
                 ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).quick_ratio()
                 for i in x[t].split(" "):
-                    if i == para:
+                    if stripSearch(i) == stripSearch(para):
                         ratio = 1
                         break
             except:
