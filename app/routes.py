@@ -101,13 +101,15 @@ def lookup(para, ind):
         for x in index:
             #if (x[t] == para):
             try:
-                ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).quick_ratio()
+                for i in x[t].split(" "):
+                    ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(i)).quick_ratio()
+                    if ratio >= .95:
+                        break
             except:
                 ratio = 0
             if (ratio >= .95):
                 print(ratio)
                 found.append(x)
-            print(ratio)
         ti = (time.time() - start_time)
         print(f"Time: {ti} seconds")
     return found
