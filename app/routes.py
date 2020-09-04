@@ -24,15 +24,19 @@ index = []
 @app.route('/index')
 def searchIndex():
     output = ""
-    try:
+
+    if (len(request.args) > 0):
+        try:
         # ToDo: set up type input 
-        data = lookup(request.args['search'], request.args['filter'])
-        for x in data:
+            data = lookup(request.args['search'], request.args['filter'])
+            for x in data:
+                output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
+        except Exception as e:
+            print(e)
+    else:
+        for x in index:
             output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
-    except Exception as e:
-        print(e)
-        #for x in index:
-            #output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
+    
     
     return output
 
