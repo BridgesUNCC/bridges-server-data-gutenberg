@@ -94,21 +94,22 @@ def lookup(para, ind):
         for x in index:
             for auth in x[t]:
                 #if (para == auth):
-                if (difflib.SequenceMatcher(None, stripSearch(para), stripSearch(auth)).ratio() >= .95):
+                if (difflib.SequenceMatcher(None, stripSearch(para), stripSearch(auth)).ratio() >= .90):
                     found.append(x)
     else:
         start_time = time.time()
         for x in index:
             #if (x[t] == para):
             try:
+                ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).quick_ratio()
                 for i in x[t].split(" "):
-                    ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(i)).quick_ratio()
-                    if ratio >= .95:
+                    if i == para:
+                        ratio = 1
                         break
             except:
                 ratio = 0
-            if (ratio >= .95):
-                print(ratio)
+            if (ratio >= .90):
+                #print(ratio)
                 found.append(x)
         ti = (time.time() - start_time)
         print(f"Time: {ti} seconds")
