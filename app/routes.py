@@ -18,8 +18,11 @@ import xml.etree.ElementTree as ET
 import requests
 import difflib
 import re
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 
 index = []
+titles = []
 
 @app.route('/index')
 def searchIndex():
@@ -103,7 +106,8 @@ def lookup(para, ind):
                             found.append(x)
     else:
         start_time = time.time()
-        for x in index:
+
+        '''for x in index:
             try:
                 ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).quick_ratio()
                 for i in x[t].split(" "):
@@ -113,7 +117,11 @@ def lookup(para, ind):
             except:
                 ratio = 0
             if (ratio >= .90):
-                found.append(x)
+                found.append(x)'''
+
+        
+        found = process.extract(para, titles, limit=8)
+
         ti = (time.time() - start_time)
         print(f"Time: {ti} seconds")
     return found
@@ -205,8 +213,11 @@ def loadIndex():
             indexJSON = {}
             fp.close
         print("Loaded index from local file")
+        
     else:
         parseIndex()
+    for x in index:
+        titles.append(x[1])
     return
 
 def LRU(key):
