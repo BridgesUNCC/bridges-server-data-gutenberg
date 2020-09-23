@@ -18,8 +18,8 @@ import xml.etree.ElementTree as ET
 import requests
 import difflib
 import re
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
+from rapidfuzz import fuzz
+from rapidfuzz import process
 
 index = []
 titles = []
@@ -121,7 +121,7 @@ def lookup(para, ind):
 
         
         found = process.extract(para, titles, limit=8)
-
+        print(found)
         ti = (time.time() - start_time)
         print(f"Time: {ti} seconds")
     return found
