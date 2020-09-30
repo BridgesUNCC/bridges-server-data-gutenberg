@@ -96,37 +96,36 @@ def lookup(para, ind):
     if t == 4:
         for x in index:
             for auth in x[t]:
-                flipAuth = stripSearch(auth).split(" ")
+                flipAuth = auth.split(" ")
                 flipAuthStr = f"{flipAuth[1]} {flipAuth[0]}"
-                if (difflib.SequenceMatcher(None, stripSearch(para), stripSearch(auth)).quick_ratio() >= .90 or difflib.SequenceMatcher(None, stripSearch(para), stripSearch(flipAuthStr)).quick_ratio() >= .90):
+                if (difflib.SequenceMatcher(None, para, auth).quick_ratio() >= .90 or difflib.SequenceMatcher(None, para, flipAuthStr).quick_ratio() >= .90):
                     found.append(x)
                 else:
-                    for i in stripSearch(auth).split(' '):
-                        if stripSearch(para) == stripSearch(i):
+                    for i in auth.split(' '):
+                        if para == i:
                             found.append(x)
     else:
         start_time = time.time()
 
-        '''for x in index:
+        for x in index:
             try:
-                ratio = difflib.SequenceMatcher(None, stripSearch(para), stripSearch(x[t])).quick_ratio()
+                ratio = difflib.SequenceMatcher(None, para, x[t]).quick_ratio()
                 for i in x[t].split(" "):
-                    if stripSearch(i) == stripSearch(para):
+                    if i == para:
                         ratio = 1
                         break
             except:
                 ratio = 0
             if (ratio >= .90):
-                found.append(x)'''
+                found.append(x)
 
         
-        found = process.extract(para, titles, limit=8)
-        print(found)
+        # found = process.extract(para, titles) Uses external library for attempted speed up
+
         ti = (time.time() - start_time)
         print(f"Time: {ti} seconds")
     return found
     
-
 def parseIndex():
     root = "app/epub"
 
@@ -243,7 +242,7 @@ def LRU(key):
     f.close()
     return
 
-def stripSearch(regFilter):
+def stingConditioning(regFilter):
     regFilter = regFilter.lower()
     temp = re.sub('[\'\n:;,./?!&]', '', regFilter)
     return temp
