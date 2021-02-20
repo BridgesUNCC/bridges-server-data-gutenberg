@@ -44,3 +44,6 @@ The returned data is in json format such as:
 }
 ```
 A books text may return a 404, this indicates that the text request was not successful when accessing Gutenberg
+
+
+> Note: Certain search types are not fully functioning as they should, date only returns the date that the Gutenberg entry was last edited/added to the database
