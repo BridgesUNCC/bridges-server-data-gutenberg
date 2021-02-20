@@ -13,15 +13,15 @@ import shutil
 import pickle
 import gutenberg_cleaner
 import gutenberg
-from gutenberg.acquire import load_etext
-from gutenberg.query import get_etexts
-from gutenberg.query import get_metadata
+#from gutenberg.acquire import load_etext
+#from gutenberg.query import get_etexts
+#from gutenberg.query import get_metadata
 import xml.etree.ElementTree as ET
 import requests
 import difflib
 import re
-from rapidfuzz import fuzz
-from rapidfuzz import process
+#from rapidfuzz import fuzz
+#from rapidfuzz import process
 
 index = []
 titles = []
@@ -81,7 +81,6 @@ def data_search_request():
 
 
     return json.dumps(json_data)
-
 
 @app.route('/index')
 def searchIndex():
