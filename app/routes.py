@@ -14,6 +14,8 @@ import pickle
 import gutenberg_cleaner
 import gutenberg
 from gutenberg.acquire import load_etext
+from gutenberg.query import get_etexts
+from gutenberg.query import get_metadata
 import xml.etree.ElementTree as ET
 import requests
 import difflib
@@ -23,6 +25,63 @@ from rapidfuzz import process
 
 index = []
 titles = []
+
+@app.route('/search')
+def data_search_request():
+    search = request.args['search']
+    search_type = request.args['type']
+
+    try:
+        strip = request.args['strip'].lower()
+    except:
+        strip = "true"
+
+
+    data = lookup(search, search_type) #search for list of id's
+
+    json_data = {"book_list": []}
+    
+    for d in data:
+        book = {}
+        book['id'] = d[0]
+        book['title'] = d[1]
+        book['lang'] = d[2]
+        book['date_added'] = d[3]
+        book['authors'] = d[4]
+
+        url = f"https://www.gutenberg.org/cache/epub/{d[0]}/pg{d[0]}.txt"
+        filename = f"app/books/{d[0]}.txt"
+
+        error_404 = False
+        if (not bookCheck(d[0])):
+            response = requests.get(url)
+            if response.status_code == 404: # Checks to see if book url 404s
+                error_404 = True
+            else:
+                data = response.content.decode()
+                #data = load_etext(d[0])
+                x = open(filename, "w")
+                x.write(data)
+                x.close()
+
+        if error_404 == False:
+            LRU(d[0])
+            f = open(filename, "r").read()
+
+            if (strip == "true"):
+                f = gutenberg_cleaner.simple_cleaner(f)
+        else:
+            f = 404
+
+
+
+        book['text'] = f
+        json_data["book_list"].append(book)
+
+
+
+    return json.dumps(json_data)
+
 
 @app.route('/index')
 def searchIndex():
@@ -56,8 +115,8 @@ def downloadBook():
 
 
     if (not bookCheck(num)):
-        #data = requests.get(url).content
-        data = load_etext(num)
+        data = requests.get(url).content.decode()
+        #data = load_etext(num)
 
         x = open(filename, "w")
         x.write(data)
@@ -74,9 +133,8 @@ def downloadBook():
 
 @app.route('/meta')
 def metaData():
-
+    
     return meta
-
 
 def lookup(para, ind):
     if (ind == "id"):
@@ -261,5 +319,5 @@ app_log.setLevel(logging.DEBUG)
 
 app_log.addHandler(my_handler)
 
-
+os.environ["GUTENBERG_MIRROR"] = 'http://www.gutenberg.org/dirs/'
 loadIndex()
