@@ -20,6 +20,7 @@ import xml.etree.ElementTree as ET
 import requests
 import difflib
 import re
+from flask import cli
 #from rapidfuzz import fuzz
 #from rapidfuzz import process
 
@@ -204,12 +205,12 @@ def parseIndex():
                     print(f"{pro}%")
 
 
-                # ID, TITLE, LANG, ISSUED, CREATORS
-                temp = [None, None, None, None, []]
+                # ID, TITLE, LANG, ISSUED, CREATORS, GENRES
+                temp = [None, None, None, None, [], []]
                 #TODO: Parse XML Files into index array
                 tree = ET.parse(filepath)
                 root = tree.getroot()
-                temp.append(root)
+                #temp.append(root)
 
                 for child in root:
                     if (child.tag.endswith("ebook")):
@@ -222,6 +223,11 @@ def parseIndex():
                                 temp[3] = (smallerchild.text)
                             elif (smallerchild.tag.endswith("language")):
                                 temp[2] = smallerchild[0][0].text
+                            elif (smallerchild.tag.endswith("subject")): #genre parse
+                                for x in smallerchild[0]:
+                                    if x.tag.endswith('value'):
+                                        temp[5].append(x.text)
+
                             elif (smallerchild.tag.endswith("creator")):
                                 for agent in smallerchild:
                                     for terms in agent:
@@ -230,8 +236,8 @@ def parseIndex():
                                 
                                 
                 index.append(temp)
+                print(temp)
                 root.clear() #GARBAGE COLLECTION
-
     print("Parse Complete")
     print(f"Total Text Count: {count}")
 
@@ -239,7 +245,7 @@ def parseIndex():
     store = {}
 
     for x in index:
-        subStore = {'id' : x[0], 'title': x[1], 'language': x[2], 'date': x[3], 'authors': x[4]}
+        subStore = {'id' : x[0], 'title': x[1], 'language': x[2], 'date': x[3], 'authors': x[4], 'genres': x[5]}
         store[str(x[0])] = subStore
 
     with open('index.json', 'w') as outfile:
@@ -303,6 +309,12 @@ def stingConditioning(regFilter):
     regFilter = regFilter.lower()
     temp = re.sub('[\'\n:;,./?!&]', '', regFilter)
     return temp
+
+@app.cli.command('index')
+def force_parse():
+
+    return
+
 
 #setting up the server log
 format = logging.Formatter('%(asctime)s %(message)s')   #TODO: Logger not logging
