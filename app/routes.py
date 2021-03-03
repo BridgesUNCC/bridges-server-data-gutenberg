@@ -42,13 +42,16 @@ def data_search_request():
 
     json_data = {"book_list": []}
     
-    for d in data:
+    for i, d in enumerate(data):
+        if i > 20:
+            break
         book = {}
         book['id'] = d[0]
         book['title'] = d[1]
         book['lang'] = d[2]
         book['date_added'] = d[3]
         book['authors'] = d[4]
+        book['genres'] = d[5]
 
         url = f"https://www.gutenberg.org/cache/epub/{d[0]}/pg{d[0]}.txt"
         filename = f"app/books/{d[0]}.txt"
@@ -147,10 +150,13 @@ def lookup(para, ind):
         t = 3
     elif (ind == "author"):
         t = 4
+    elif (ind == "genre"):
+        t = 5
 
 
     found = []
 
+    #author list search
     if t == 4:
         for x in index:
             for auth in x[t]:
@@ -162,6 +168,15 @@ def lookup(para, ind):
                     for i in auth.split(' '):
                         if para == i:
                             found.append(x)
+    #genre list search
+    elif t == 5: 
+        for x in index:
+            for genre in x[t]:
+                ratio = difflib.SequenceMatcher(None, para, genre).quick_ratio()
+                if (ratio >= .75):
+                    found.append(x)
+    
+
     else:
         start_time = time.time()
 
@@ -270,6 +285,7 @@ def loadIndex():
                 temp.append(value['language'])
                 temp.append(value['date'])
                 temp.append(value['authors'])
+                temp.append(value['genres'])
 
                 index.append(temp)
             indexJSON = {}
