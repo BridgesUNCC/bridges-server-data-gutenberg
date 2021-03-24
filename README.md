@@ -14,7 +14,7 @@ The parameters to pass are:
   * strip : (OPTIONAL) Tells the server if you want to remove header and footer data from the book text, default is True
  
  Type and Strip have specific values that it is looking for:
-  * type = id, title, language, date, author
+  * type = id, title, language, date, author, genre, loc
   * strip = true or false (True = yes strip the data, False = don't strip the data)
 
 The returned data is in json format such as:
