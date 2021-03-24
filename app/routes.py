@@ -13,16 +13,12 @@ import shutil
 import pickle
 import gutenberg_cleaner
 import gutenberg
-#from gutenberg.acquire import load_etext
-#from gutenberg.query import get_etexts
-#from gutenberg.query import get_metadata
 import xml.etree.ElementTree as ET
 import requests
 import difflib
 import re
 from flask import cli
-#from rapidfuzz import fuzz
-#from rapidfuzz import process
+
 
 index = []
 titles = []
@@ -52,8 +48,9 @@ def data_search_request():
         book['date_added'] = d[3]
         book['authors'] = d[4]
         book['genres'] = d[5]
+        book['loc_class'] = d[6]
 
-        url = f"https://www.gutenberg.org/cache/epub/{d[0]}/pg{d[0]}.txt"
+        '''url = f"https://www.gutenberg.org/cache/epub/{d[0]}/pg{d[0]}.txt"
         filename = f"app/books/{d[0]}.txt"
 
         error_404 = False
@@ -79,14 +76,14 @@ def data_search_request():
 
 
 
-        book['text'] = f
+        book['text'] = f'''
         json_data["book_list"].append(book)
 
 
 
     return json.dumps(json_data)
 
-@app.route('/index')
+'''@app.route('/index')
 def searchIndex():
     output = ""
 
@@ -103,7 +100,7 @@ def searchIndex():
             output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
     
     
-    return output
+    return output'''
 
 @app.route('/book')
 def downloadBook():
@@ -113,31 +110,53 @@ def downloadBook():
         strip = request.args['strip'].lower()
     except:
         strip = "true"
-    url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
-    filename = f"app/books/{num}.txt"
+        
+        
+        url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
+        filename = f"app/books/{num}.txt"
 
+        error_404 = False
+        if (not bookCheck(num)):
+            response = requests.get(url)
+            if response.status_code == 404: # Checks to see if book url 404s
+                error_404 = True
+            else:
+                data = response.content.decode()
+                #data = load_etext(d[0])
+                x = open(filename, "w")
+                x.write(data)
+                x.close()
 
-    if (not bookCheck(num)):
-        data = requests.get(url).content.decode()
-        #data = load_etext(num)
+        if error_404 == False:
+            LRU(num)
+            f = open(filename, "r").read()
 
-        x = open(filename, "w")
-        x.write(data)
-        x.close()
-
-    LRU(num)
-    f = open(filename, "r").read()
-
-    if (strip == "true"):
-        f = gutenberg_cleaner.simple_cleaner(f)
+            if (strip == "true"):
+                f = gutenberg_cleaner.simple_cleaner(f)
+        else:
+            f = 404
 
 
     return f
 
-@app.route('/meta')
-def metaData():
+@app.route('/meta') # returns meta data based on ID
+def meta_id():
+    book_id = int(request.args['id'])
+    book_json = {"book_list": []}
+    for d in index:
+        if int(d[0]) == book_id:
+            book = {}
+            book['id'] = d[0]
+            book['title'] = d[1]
+            book['lang'] = d[2]
+            book['date_added'] = d[3]
+            book['authors'] = d[4]
+            book['genres'] = d[5]
+            book['loc_class'] = d[6]
+            book_json["book_list"].append(book)
+            break
     
-    return meta
+    return json.dumps(book_json)
 
 def lookup(para, ind):
     if (ind == "id"):
@@ -152,6 +171,8 @@ def lookup(para, ind):
         t = 4
     elif (ind == "genre"):
         t = 5
+    elif (ind == "loc"):
+        t = 6
 
 
     found = []
@@ -169,14 +190,13 @@ def lookup(para, ind):
                         if para == i:
                             found.append(x)
     #genre list search
-    elif t == 5: 
+    elif t == 5 or t == 6: 
         for x in index:
             for genre in x[t]:
                 ratio = difflib.SequenceMatcher(None, para, genre).quick_ratio()
                 if (ratio >= .75):
                     found.append(x)
     
-
     else:
         start_time = time.time()
 
@@ -220,8 +240,8 @@ def parseIndex():
                     print(f"{pro}%")
 
 
-                # ID, TITLE, LANG, ISSUED, CREATORS, GENRES
-                temp = [None, None, None, None, [], []]
+                # ID, TITLE, LANG, ISSUED, CREATORS, GENRES, LoC Class
+                temp = [None, None, None, None, [], [], []]
                 #TODO: Parse XML Files into index array
                 tree = ET.parse(filepath)
                 root = tree.getroot()
@@ -241,7 +261,10 @@ def parseIndex():
                             elif (smallerchild.tag.endswith("subject")): #genre parse
                                 for x in smallerchild[0]:
                                     if x.tag.endswith('value'):
-                                        temp[5].append(x.text)
+                                        if len(x.text) <= 2:
+                                            temp[6].append(x.text)
+                                        else:
+                                            temp[5].append(x.text)
 
                             elif (smallerchild.tag.endswith("creator")):
                                 for agent in smallerchild:
@@ -251,7 +274,6 @@ def parseIndex():
                                 
                                 
                 index.append(temp)
-                print(temp)
                 root.clear() #GARBAGE COLLECTION
     print("Parse Complete")
     print(f"Total Text Count: {count}")
@@ -260,7 +282,7 @@ def parseIndex():
     store = {}
 
     for x in index:
-        subStore = {'id' : x[0], 'title': x[1], 'language': x[2], 'date': x[3], 'authors': x[4], 'genres': x[5]}
+        subStore = {'id' : x[0], 'title': x[1], 'language': x[2], 'date': x[3], 'authors': x[4], 'genres': x[5], 'loc_class': x[6]}
         store[str(x[0])] = subStore
 
     with open('index.json', 'w') as outfile:
@@ -286,6 +308,7 @@ def loadIndex():
                 temp.append(value['date'])
                 temp.append(value['authors'])
                 temp.append(value['genres'])
+                temp.append(value['loc_class'])
 
                 index.append(temp)
             indexJSON = {}
@@ -328,12 +351,54 @@ def stingConditioning(regFilter):
 
 @app.cli.command('index')
 def force_parse():
-
+    os.remove("index.json")
+    parseIndex()
     return
 
+@app.route('/hist')
+def histogram_genre():
+    hist = {}
+    for x in index:
+        for g in x[5]:
+            if g in hist:
+                hist[g] += 1
+            else:
+                hist[g] = 1
+
+
+    hist = {k: v for k, v in sorted(hist.items(), key=lambda item: item[1], reverse=True)}
+
+
+    string_hist =  ""
+    for x in hist:
+        string_hist = string_hist + f"{x}  :  {hist[x]}<br>"
+
+    #return json.dumps(hist, indent=4)
+    return string_hist
+
+@app.route('/lochist')
+def histogram_loc():
+    hist = {}
+    for x in index:
+        for g in x[6]:
+            if g in hist:
+                hist[g] += 1
+            else:
+                hist[g] = 1
+
+
+    hist = {k: v for k, v in sorted(hist.items(), key=lambda item: item[1], reverse=True)}
+
+
+    string_hist =  ""
+    for x in hist:
+        string_hist = string_hist + f"{x}  :  {hist[x]}<br>"
+
+    #return json.dumps(hist, indent=4)
+    return string_hist
 
 #setting up the server log
-format = logging.Formatter('%(asctime)s %(message)s')   #TODO: Logger not logging
+format = logging.Formatter('%(asctime)s %(message)s') 
 
 logFile = 'log.log'
 my_handler = RotatingFileHandler(logFile, mode='a', maxBytes=5*1024*1024,
