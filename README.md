@@ -1,6 +1,7 @@
 # bridges-server-data-gutenburg
 
 ## Making Requests
+### Searching Database
 To return the book data use a URL similar to
 ```
 http://192.168.2.14:5000/search?search=home&type=title
@@ -13,7 +14,7 @@ The parameters to pass are:
   * strip : (OPTIONAL) Tells the server if you want to remove header and footer data from the book text, default is True
  
  Type and Strip have specific values that it is looking for:
-  * type = id, title, language, date, author
+  * type = id, title, language, date, author, genre, loc
   * strip = true or false (True = yes strip the data, False = don't strip the data)
 
 The returned data is in json format such as:
@@ -21,29 +22,91 @@ The returned data is in json format such as:
 {
     "book_list": [
         {
-            "id": "60960",
-            "title": "In an Unknown Prison Land\r\nAn account of convicts and colonists in New Caledonia with jottings out and home",
+            "id": "60045",
+            "title": "The Golden Wheel Dream-book and Fortune-teller",
             "lang": "en",
-            "date_added": "2019-12-18",
+            "date_added": "2019-08-03",
             "authors": [
-                "Griffith, George Chetwynd"
+                "Fontaine, Felix"
             ],
-            "text": "Book text here"
+            "genres": [
+                "Dream interpretation",
+                "Fortune-telling"
+            ],
+            "loc_class": [
+                "BF"
+            ]
         },
         {
-            "id": "43200",
-            "title": "Cornell Nature-Study Leaflets\r\nBeing a selection, with revision, from the teachers' leaflets, home nature-study lessons, junior naturalist monthlies and other publications from the College of Agriculture, Cornell University, Ithaca, N.Y., 1896-1904",
+            "id": "62485",
+            "title": "Edgings: crocheted, tatted, hair pin lace",
             "lang": "en",
-            "date_added": "2013-07-12",
+            "date_added": "2020-06-26",
             "authors": [
-                "New York State College of Agriculture"
+                "American Thread Company"
             ],
-            "text": 404
+            "genres": [
+                "Crocheting -- Patterns",
+                "Tatting -- Patterns",
+                "Knitting -- Patterns"
+            ],
+            "loc_class": [
+                "TT"
+            ]
         }
     ]
 }
 ```
-A books text may return a 404, this indicates that the text request was not successful when accessing Gutenberg
+### Returning Meta data based on ID
+To return meta data based on Id use this URL format 
+```
+http://192.168.2.14:5000/meta?id=2701
+```
+
+The parameters to pass are:
+  * id : The id of the book you want meta data on
+  
+The returned data is in json format such as:
+```json
+{
+    "book_list": [
+        {
+            "id": "2701",
+            "title": "Moby Dick; Or, The Whale",
+            "lang": "en",
+            "date_added": "2001-07-01",
+            "authors": [
+                "Melville, Herman"
+            ],
+            "genres": [
+                "Whaling -- Fiction",
+                "Adventure stories",
+                "Sea stories",
+                "Whaling ships -- Fiction",
+                "Ship captains -- Fiction",
+                "Whales -- Fiction",
+                "Psychological fiction",
+                "Ahab, Captain (Fictitious character) -- Fiction",
+                "Mentally ill -- Fiction"
+            ],
+            "loc_class": [
+                "PS"
+            ]
+        }
+    ]
+}
+```
+### Getting Book Texts
+To return a books text use this URL:
+```
+http://192.168.2.14:5000/book?id=2701
+```
+The parameters to pass are:
+  * id : The id of the book you want the text of
+
+The data returned is just a plain string that holds the books text
+
+*A books text may return a 404, this indicates that the text request was not successful when accessing Gutenberg
 
 
 > Note: Certain search types are not fully functioning as they should, date only returns the date that the Gutenberg entry was last edited/added to the database
