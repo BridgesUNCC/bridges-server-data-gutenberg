@@ -106,35 +106,36 @@ def searchIndex():
 def downloadBook():
     num = int(request.args['id'])
     #check for strip parameter
-    try:
+    if 'strip' in request.args:
         strip = request.args['strip'].lower()
-    except:
+    else:
         strip = "true"
         
         
-        url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
-        filename = f"app/books/{num}.txt"
-
-        error_404 = False
-        if (not bookCheck(num)):
-            response = requests.get(url)
-            if response.status_code == 404: # Checks to see if book url 404s
-                error_404 = True
-            else:
-                data = response.content.decode()
-                #data = load_etext(d[0])
-                x = open(filename, "w")
-                x.write(data)
-                x.close()
-
-        if error_404 == False:
-            LRU(num)
-            f = open(filename, "r").read()
-
-            if (strip == "true"):
-                f = gutenberg_cleaner.simple_cleaner(f)
+    url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
+    filename = f"app/books/{num}.txt"
+    os.makedirs(f"app/books/", exist_ok=True)
+        
+    error_404 = False
+    if (not bookCheck(num)):
+        response = requests.get(url)
+        if response.status_code == 404: # Checks to see if book url 404s
+            error_404 = True
         else:
-            f = 404
+            data = response.content.decode()
+            #data = load_etext(d[0])
+            x = open(filename, "w")
+            x.write(data)
+            x.close()
+
+    if error_404 == False:
+        LRU(num)
+        f = open(filename, "r").read()
+
+        if (strip == "true"):
+            f = gutenberg_cleaner.simple_cleaner(f)
+    else:
+        f = 404
 
 
     return f
