@@ -19,12 +19,11 @@ import difflib
 import re
 from flask import cli
 import zipfile
-
+from app import meta
 
 index = [] # entries in the index are arrays where 0 is ID, 1 is title, 2 is lang, 3 is data_added, 4 is authors, 5 is genres, and 6 is loc class
 titles = []
 
-id_to_book = {}
 
 @app.route('/search')
 def data_search_request():
@@ -149,30 +148,18 @@ def downloadBook():
 
 @app.route('/meta') # returns meta data based on ID
 def meta_id():
-    starttime = time.time()
     book_id = int(request.args['id'])
-    book_json = {"book_list": []}
-    try:
-        
-        d = id_to_book[book_id]
-    
-        book = {}
-        book['id'] = d[0]
-        book['title'] = d[1]
-        book['lang'] = d[2]
-        book['date_added'] = d[3]
-        book['authors'] = d[4]
-        book['genres'] = d[5]
-        book['loc_class'] = d[6]
-        book_json["book_list"].append(book)
-        
-        endtime = time.time()
-    
-        print ("processing "+request.url+" in "+ '{0:.6f}'.format(endtime-starttime) +" seconds")
-        return json.dumps(book_json)
-    except:
-        return "id does not exist" #this should change HTTP return code
 
+    starttime = time.time()
+
+    ret = meta.get_meta_by_id(book_id)
+    
+    endtime = time.time()
+        
+    print ("processing "+request.url+" in "+ '{0:.6f}'.format(endtime-starttime) +" seconds")
+    
+    return ret
+    
 def lookup(para, ind):
     if (ind == "id"):
         t = 0
@@ -333,8 +320,7 @@ def loadIndex():
     else:
         parseIndex()
 
-    for x in index:
-        id_to_book[int(x[0])] = x
+    meta.build_index()
         
     for x in index:
         titles.append(x[1])
