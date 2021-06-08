@@ -165,7 +165,7 @@ def meta_id():
 
     endtime = time.time()
 
-    print ("processing query in "+ '{0:.6f}'.format(endtime-starttime) +" seconds")
+    print ("processing "+request.url+" in "+ '{0:.6f}'.format(endtime-starttime) +" seconds")
     return json.dumps(book_json)
 
 def lookup(para, ind):
@@ -433,7 +433,7 @@ my_handler.setFormatter(format)
 my_handler.setLevel(logging.ERROR)
 
 app_log = logging.getLogger('root')
-app_log.setLevel(logging.DEBUG)
+app_log.setLevel(level=logging.DEBUG)
 
 app_log.addHandler(my_handler)
 
