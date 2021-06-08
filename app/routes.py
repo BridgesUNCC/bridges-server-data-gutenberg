@@ -15,14 +15,13 @@ import gutenberg_cleaner
 #import gutenberg
 import xml.etree.ElementTree as ET
 import requests
-import difflib
 import re
 from flask import cli
 import zipfile
 import tarfile
-
-index = []
 from app import meta
+from app import search
+
 
 index = [] # entries in the index are arrays where 0 is ID, 1 is title, 2 is lang, 3 is data_added, 4 is authors, 5 is genres, and 6 is loc class
 titles = []
@@ -30,21 +29,28 @@ titles = []
 
 @app.route('/search')
 def data_search_request():
-    search = request.args['search']
+    mysearch = request.args['search']
     search_type = request.args['type']
-
+    limit = 20
+    
     try:
         strip = request.args['strip'].lower()
     except:
         strip = "true"
 
+    start_time = time.time()
 
-    data = lookup(search, search_type) #search for list of id's
 
+    data = search.lookup(mysearch, search_type) #search for list of id's
+
+    ti = (time.time() - start_time)
+    print(f"Time: {ti} seconds")
+
+    
     json_data = {"book_list": []}
     
     for i, d in enumerate(data):
-        if i > 20:
+        if i > limit:
             break
         book = {}
         book['id'] = d[0]
@@ -133,66 +139,6 @@ def meta_id():
     
     return ret
     
-def lookup(para, ind):
-    if (ind == "id"):
-        t = 0
-    elif (ind == "title"):
-        t = 1
-    elif (ind == "language"):
-        t = 2
-    elif (ind == "date"):
-        t = 3
-    elif (ind == "author"):
-        t = 4
-    elif (ind == "genre"):
-        t = 5
-    elif (ind == "loc"):
-        t = 6
-
-
-    found = []
-
-    #author list search
-    if t == 4:
-        for x in index:
-            for auth in x[t]:
-                flipAuth = auth.split(" ")
-                flipAuthStr = f"{flipAuth[1]} {flipAuth[0]}"
-                if (difflib.SequenceMatcher(None, para, auth).quick_ratio() >= .90 or difflib.SequenceMatcher(None, para, flipAuthStr).quick_ratio() >= .90):
-                    found.append(x)
-                else:
-                    for i in auth.split(' '):
-                        if para == i:
-                            found.append(x)
-    #genre list search
-    elif t == 5 or t == 6: 
-        for x in index:
-            for genre in x[t]:
-                ratio = difflib.SequenceMatcher(None, para, genre).quick_ratio()
-                if (ratio >= .75):
-                    found.append(x)
-    
-    else:
-        start_time = time.time()
-
-        for x in index:
-            try:
-                ratio = difflib.SequenceMatcher(None, para, x[t]).quick_ratio()
-                for i in x[t].split(" "):
-                    if i == para:
-                        ratio = 1
-                        break
-            except:
-                ratio = 0
-            if (ratio >= .90):
-                found.append(x)
-
-        
-        # found = process.extract(para, titles) Uses external library for attempted speed up
-
-        ti = (time.time() - start_time)
-        print(f"Time: {ti} seconds")
-    return found
     
 def parseIndex():
     root = "index\cache\epub"
@@ -346,7 +292,9 @@ def loadIndex():
         parseIndex()
 
     meta.build_index()
-        
+    search.build_index()
+
+    
     for x in index:
         titles.append(x[1])
     return
