@@ -152,23 +152,26 @@ def meta_id():
     starttime = time.time()
     book_id = int(request.args['id'])
     book_json = {"book_list": []}
-
-    d = id_to_book[book_id]
+    try:
+        
+        d = id_to_book[book_id]
     
-    book = {}
-    book['id'] = d[0]
-    book['title'] = d[1]
-    book['lang'] = d[2]
-    book['date_added'] = d[3]
-    book['authors'] = d[4]
-    book['genres'] = d[5]
-    book['loc_class'] = d[6]
-    book_json["book_list"].append(book)
+        book = {}
+        book['id'] = d[0]
+        book['title'] = d[1]
+        book['lang'] = d[2]
+        book['date_added'] = d[3]
+        book['authors'] = d[4]
+        book['genres'] = d[5]
+        book['loc_class'] = d[6]
+        book_json["book_list"].append(book)
+        
+        endtime = time.time()
     
-    endtime = time.time()
-    
-    print ("processing "+request.url+" in "+ '{0:.6f}'.format(endtime-starttime) +" seconds")
-    return json.dumps(book_json)
+        print ("processing "+request.url+" in "+ '{0:.6f}'.format(endtime-starttime) +" seconds")
+        return json.dumps(book_json)
+    except:
+        return "id does not exist" #this should change HTTP return code
 
 def lookup(para, ind):
     if (ind == "id"):
