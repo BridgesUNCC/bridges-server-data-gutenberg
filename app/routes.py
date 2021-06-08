@@ -12,12 +12,13 @@ import io
 import shutil
 import pickle
 import gutenberg_cleaner
-import gutenberg
+#import gutenberg
 import xml.etree.ElementTree as ET
 import requests
 import difflib
 import re
 from flask import cli
+import zipfile
 
 
 index = []
@@ -358,11 +359,27 @@ def stingConditioning(regFilter):
     temp = re.sub('[\'\n:;,./?!&]', '', regFilter)
     return temp
 
-@app.cli.command('index')
+
+def downloadIndex():
+    url = "https://www.gutenberg.org/cache/epub/feeds/catalog.rdf.zip"
+    wget.download(url, )
+    #response = request.get(url)
+    print(response.ok)
+    open("index_rdf.zip", 'wb').write(response.content)
+    with zipfile.ZipFile("index_rdf.zip","r") as zip_ref:
+        zip_ref.extractall("index")
+    return
+
+
+@app.cli.command('update')
 def force_parse():
     os.remove("index.json")
+    downloadIndex()
     parseIndex()
     return
+
+
+
 
 @app.route('/hist')
 def histogram_genre():
