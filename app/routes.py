@@ -84,6 +84,10 @@ def data_search_request():
 
     return json.dumps(json_data)
 
+@app.route('/')
+def homepage():
+    return "If you are reading this, you probably want to see the documentation of the gutenberg server at : https://github.com/BridgesUNCC/bridges-server-data-gutenberg"
+
 '''@app.route('/index')
 def searchIndex():
     output = ""

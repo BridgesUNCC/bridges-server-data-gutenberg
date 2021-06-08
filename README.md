@@ -111,9 +111,17 @@ The data returned is just a plain string that holds the books text
 
 > Note: Certain search types are not fully functioning as they should, date only returns the date that the Gutenberg entry was last edited/added to the database
 
-## Install
+## Running the server locally
+
+### Install
 
 ```
 sudo apt-get install libdb++-dev
 pip3 install flask wget gutenberg_cleaner gutenberg
+```
+
+### Running it
+
+```
+flask run  --host=0.0.0.0 --port=9999
 ```
