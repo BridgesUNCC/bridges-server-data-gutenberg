@@ -19,7 +19,7 @@ import difflib
 import re
 from flask import cli
 import zipfile
-
+import tarfile
 
 index = []
 titles = []
@@ -226,7 +226,7 @@ def lookup(para, ind):
     return found
     
 def parseIndex():
-    root = "app/epub"
+    root = "index\cache\epub"
 
     count = 0
 
@@ -234,6 +234,51 @@ def parseIndex():
     print("Progress")
     pro = 0
     
+    '''
+    index_dir = "index/catalog.rdf"
+
+    
+    tree = ET.parse(index_dir)
+    root = tree.getroot()
+    
+    for child in root:
+
+        #       ID, TITLE, LANG, ISSUED, CREATORS, GENRES, LoC Class
+        temp = [None, None, None, None, [], [], []]
+        if (child.tag.endswith("etext")):
+            temp[0] = int(child.attrib["{http://www.w3.org/1999/02/22-rdf-syntax-ns#}ID"].replace("etext", ""))
+            for smallerchild in child:
+                if (smallerchild.tag.endswith("title") and not smallerchild.tag.endswith("friendlytitle")):
+                    temp[1] = (smallerchild.text.replace("\n", " "))
+                elif (smallerchild.tag.endswith("language")):
+                    temp[2] = (smallerchild[0][0].text)
+                elif (smallerchild.tag.endswith("created")):
+                    temp[3] = (smallerchild[0][0].text)
+                elif (smallerchild.tag.endswith("creator")):
+                    if (smallerchild.text != None): #checks for single value
+                        temp[4].append(smallerchild.text)
+                    else:
+                        for agent in smallerchild:
+                            if (agent.tag.endswith("li")):
+                                temp[4].append(agent.text)
+
+                elif (smallerchild.tag.endswith("subject")):
+                    for i in smallerchild:
+                        if(i.tag.endswith("LCC")):
+                            temp[6].append(i[0].text)
+                        elif (i.tag.endswith("LCSH")):
+                            temp[5].append(i[0].text)
+                        elif (i.tag.endswith("Bag")):
+                            for x in i:
+                                temp[5].append(x[0][0].text)
+
+
+            index.append(temp)
+            count = count + 1
+    print("Parse Complete")
+    print(f"Total Text Count: {count}")
+
+    '''
 
     for subdirs, dirs, files in os.walk(root):
         for filename in files:
@@ -284,6 +329,10 @@ def parseIndex():
     print("Parse Complete")
     print(f"Total Text Count: {count}")
 
+    
+
+
+
 
     store = {}
 
@@ -296,6 +345,9 @@ def parseIndex():
 
     store = None
     subStore = None
+
+    os.rmdir("/index")
+
 
     return
 
@@ -355,15 +407,19 @@ def stingConditioning(regFilter):
     temp = re.sub('[\'\n:;,./?!&]', '', regFilter)
     return temp
 
-
 def downloadIndex():
-    url = "https://www.gutenberg.org/cache/epub/feeds/catalog.rdf.zip"
-    wget.download(url, )
+    url = "https://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.zip"
+    if (os.path.isdir("/index")):
+        os.rmdir("/index")
+    index_dir = wget.download(url)
     #response = request.get(url)
-    print(response.ok)
-    open("index_rdf.zip", 'wb').write(response.content)
-    with zipfile.ZipFile("index_rdf.zip","r") as zip_ref:
+    with zipfile.ZipFile(index_dir,"r") as zip_ref:
         zip_ref.extractall("index")
+    os.remove("rdf-files.tar.zip")
+
+    my_tar = tarfile.open('index/rdf-files.tar')
+    my_tar.extractall('./index') # specify which folder to extract to
+    my_tar.close()
     return
 
 
