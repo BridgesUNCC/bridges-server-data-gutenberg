@@ -22,7 +22,11 @@ import zipfile
 import tarfile
 
 index = []
+from app import meta
+
+index = [] # entries in the index are arrays where 0 is ID, 1 is title, 2 is lang, 3 is data_added, 4 is authors, 5 is genres, and 6 is loc class
 titles = []
+
 
 @app.route('/search')
 def data_search_request():
@@ -51,33 +55,6 @@ def data_search_request():
         book['genres'] = d[5]
         book['loc_class'] = d[6]
 
-        '''url = f"https://www.gutenberg.org/cache/epub/{d[0]}/pg{d[0]}.txt"
-        filename = f"app/books/{d[0]}.txt"
-
-        error_404 = False
-        if (not bookCheck(d[0])):
-            response = requests.get(url)
-            if response.status_code == 404: # Checks to see if book url 404s
-                error_404 = True
-            else:
-                data = response.content.decode()
-                #data = load_etext(d[0])
-                x = open(filename, "w")
-                x.write(data)
-                x.close()
-
-        if error_404 == False:
-            LRU(d[0])
-            f = open(filename, "r").read()
-
-            if (strip == "true"):
-                f = gutenberg_cleaner.simple_cleaner(f)
-        else:
-            f = 404
-
-
-
-        book['text'] = f'''
         json_data["book_list"].append(book)
 
 
@@ -148,22 +125,14 @@ def downloadBook():
 @app.route('/meta') # returns meta data based on ID
 def meta_id():
     book_id = int(request.args['id'])
-    book_json = {"book_list": []}
-    for d in index:
-        if int(d[0]) == book_id:
-            book = {}
-            book['id'] = d[0]
-            book['title'] = d[1]
-            book['lang'] = d[2]
-            book['date_added'] = d[3]
-            book['authors'] = d[4]
-            book['genres'] = d[5]
-            book['loc_class'] = d[6]
-            book_json["book_list"].append(book)
-            break
+    starttime = time.time()
+    ret = meta.get_meta_by_id(book_id)
+    endtime = time.time()
+        
+    print ("processing "+request.url+" in "+ '{0:.6f}'.format(endtime-starttime) +" seconds")
     
-    return json.dumps(book_json)
-
+    return ret
+    
 def lookup(para, ind):
     if (ind == "id"):
         t = 0
@@ -346,7 +315,7 @@ def parseIndex():
     store = None
     subStore = None
 
-    os.rmdir("/index")
+    os.rmdir("index")
 
 
     return
@@ -375,6 +344,9 @@ def loadIndex():
         
     else:
         parseIndex()
+
+    meta.build_index()
+        
     for x in index:
         titles.append(x[1])
     return
@@ -485,7 +457,7 @@ my_handler.setFormatter(format)
 my_handler.setLevel(logging.ERROR)
 
 app_log = logging.getLogger('root')
-app_log.setLevel(logging.DEBUG)
+app_log.setLevel(level=logging.DEBUG)
 
 app_log.addHandler(my_handler)
 
