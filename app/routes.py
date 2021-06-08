@@ -52,33 +52,6 @@ def data_search_request():
         book['genres'] = d[5]
         book['loc_class'] = d[6]
 
-        '''url = f"https://www.gutenberg.org/cache/epub/{d[0]}/pg{d[0]}.txt"
-        filename = f"app/books/{d[0]}.txt"
-
-        error_404 = False
-        if (not bookCheck(d[0])):
-            response = requests.get(url)
-            if response.status_code == 404: # Checks to see if book url 404s
-                error_404 = True
-            else:
-                data = response.content.decode()
-                #data = load_etext(d[0])
-                x = open(filename, "w")
-                x.write(data)
-                x.close()
-
-        if error_404 == False:
-            LRU(d[0])
-            f = open(filename, "r").read()
-
-            if (strip == "true"):
-                f = gutenberg_cleaner.simple_cleaner(f)
-        else:
-            f = 404
-
-
-
-        book['text'] = f'''
         json_data["book_list"].append(book)
 
 
@@ -149,11 +122,8 @@ def downloadBook():
 @app.route('/meta') # returns meta data based on ID
 def meta_id():
     book_id = int(request.args['id'])
-
     starttime = time.time()
-
     ret = meta.get_meta_by_id(book_id)
-    
     endtime = time.time()
         
     print ("processing "+request.url+" in "+ '{0:.6f}'.format(endtime-starttime) +" seconds")
