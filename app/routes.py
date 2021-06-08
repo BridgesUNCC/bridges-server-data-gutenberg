@@ -146,6 +146,7 @@ def downloadBook():
 
 @app.route('/meta') # returns meta data based on ID
 def meta_id():
+    starttime = time.time()
     book_id = int(request.args['id'])
     book_json = {"book_list": []}
     for d in index:
@@ -160,7 +161,10 @@ def meta_id():
             book['loc_class'] = d[6]
             book_json["book_list"].append(book)
             break
-    
+
+    endtime = time.time()
+
+    print ("processing query in "+ '{0:.6f}'.format(endtime-starttime) +" seconds")
     return json.dumps(book_json)
 
 def lookup(para, ind):
