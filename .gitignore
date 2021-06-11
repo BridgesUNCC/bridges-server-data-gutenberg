@@ -5,3 +5,4 @@ data
 hash.txt
 app/epub
 index
+lru.json

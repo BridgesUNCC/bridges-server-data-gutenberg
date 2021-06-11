@@ -101,7 +101,7 @@ def downloadBook():
         
         
     url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
-    filename = f"app/books/{num}.txt"
+    filename = f"app/books/{num}.json"
     os.makedirs(f"app/books/", exist_ok=True)
         
     error_404 = False
@@ -111,22 +111,21 @@ def downloadBook():
             error_404 = True
         else:
             data = response.content.decode()
-            #data = load_etext(d[0])
-            x = open(filename, "w")
-            x.write(data)
-            x.close()
+            with open(filename, 'w') as outfile:
+                dict_json = {"book" : data}
+                json.dump(dict_json, outfile)
 
     if error_404 == False:
         LRU(num)
-        f = open(filename, "r").read()
+        with open(filename) as json_file:
+            f = json.load(json_file)
 
         if (strip == "true"):
-            f = gutenberg_cleaner.simple_cleaner(f)
+            f["book"] = gutenberg_cleaner.simple_cleaner(f["book"])
     else:
         f = 404
 
-
-    return f
+    return json.dumps(f, indent = 4)
 
 @app.route('/meta') # returns meta data based on ID
 def meta_id():
