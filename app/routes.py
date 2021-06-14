@@ -245,9 +245,6 @@ def parseIndex():
 
     
 
-
-
-
     store = {}
 
     for x in index:
@@ -260,7 +257,6 @@ def parseIndex():
     store = None
     subStore = None
 
-    os.rmdir("index")
 
 
     return
@@ -341,16 +337,13 @@ def downloadIndex():
     my_tar.close()
     return
 
-
 @app.cli.command('update')
 def force_parse():
     os.remove("index.json")
     downloadIndex()
     parseIndex()
+    shutil.rmtree("index")
     return
-
-
-
 
 @app.route('/hist')
 def histogram_genre():
