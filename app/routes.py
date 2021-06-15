@@ -26,18 +26,21 @@ from app import search
 index = [] # entries in the index are arrays where 0 is ID, 1 is title, 2 is lang, 3 is data_added, 4 is authors, 5 is genres, and 6 is loc class
 titles = []
 
+""" Searches the index of books for matching terms then returns a json list
 
+    URL Parameters:
+        search (String): the string you want to search the index for
+        type (String): the string representing the category you want to search through (id, title, language, date, author, genre, loc)
+
+    Return:
+        json string: a json string object that contains a list of found books' meta data
+"""
 @app.route('/search')
 def data_search_request():
     mysearch = request.args['search']
     search_type = request.args['type']
     limit = 20
     
-    try:
-        strip = request.args['strip'].lower()
-    except:
-        strip = "true"
-
     start_time = time.time()
 
 
@@ -67,29 +70,15 @@ def data_search_request():
 
     return json.dumps(json_data)
 
-@app.route('/')
-def homepage():
-    return "If you are reading this, you probably want to see the documentation of the gutenberg server at : https://github.com/BridgesUNCC/bridges-server-data-gutenberg"
+""" Returns the book text of a certain id
 
-'''@app.route('/index')
-def searchIndex():
-    output = ""
+    URL Parameters:
+        id (int): the id of a book you want the text of
+        strip (String): (OPTIONAL), true(default) or false,  cleans up the returned book text to remove all Gutenberg header and footer data
 
-    if (len(request.args) > 0):
-        try:
-        # ToDo: set up type input 
-            data = lookup(request.args['search'], request.args['filter'])
-            for x in data:
-                output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
-        except Exception as e:
-            print(e)
-    else:
-        for x in index:
-            output = output + f"[{x[0]}, {x[1]}, {x[2]}, {x[3]}, {x[4]}], "
-    
-    
-    return output'''
-
+    Return:
+        json string: returns the book text within a json string object
+"""
 @app.route('/book')
 def downloadBook():
     num = int(request.args['id'])
@@ -127,7 +116,15 @@ def downloadBook():
 
     return json.dumps(f, indent = 4)
 
-@app.route('/meta') # returns meta data based on ID
+""" Returns the meta data associated with a book id
+
+    URL Parameters:
+        id(int): the id of a book you want the meta data of
+
+    Return:
+        json string: a json string object containing the books meta data
+"""
+@app.route('/meta')
 def meta_id():
     book_id = int(request.args['id'])
     starttime = time.time()
@@ -137,8 +134,15 @@ def meta_id():
     print ("processing "+request.url+" in "+ '{0:.6f}'.format(endtime-starttime) +" seconds")
     
     return ret
-    
-    
+
+""" Parse the downloaded raw rdf index files
+
+        Parameters:
+            None
+
+        Return:
+            None
+"""
 def parseIndex():
     root = "index\cache\epub"
 
@@ -261,9 +265,25 @@ def parseIndex():
 
     return
 
+""" Checks local storage for saved book text
+
+        Parameters:
+            num(int): the id of the book to look up
+
+        Return:
+            boolean: returns if the book exists or not
+"""
 def bookCheck(num):
     return os.path.exists(f"app/books/{num}.txt")
 
+""" Loads the locally saved index file
+
+        Parameters:
+            None
+
+        Return:
+            None
+"""
 def loadIndex():
     if (os.path.isfile("index.json")):
         with open("index.json") as fp:
@@ -284,7 +304,7 @@ def loadIndex():
         print("Loaded index from local file")
         
     else:
-        parseIndex()
+        force_parse()
 
     meta.build_index()
     search.build_index()
@@ -294,6 +314,14 @@ def loadIndex():
         titles.append(x[1])
     return
 
+""" Updates the LRU of book texts
+
+        Parameters:
+            key(String): the unique identifier for a books text
+
+        Return:
+            None
+"""
 def LRU(key):
     lru = []
     #load lru
@@ -317,18 +345,34 @@ def LRU(key):
     f.close()
     return
 
+""" Cleans up a given string by removing special characters
+
+        Parameters:
+            regFilter(String): the text that is to be conditioned
+
+        Return:
+            String: conditioned string
+"""
 def stingConditioning(regFilter):
     regFilter = regFilter.lower()
     temp = re.sub('[\'\n:;,./?!&]', '', regFilter)
     return temp
 
+""" Downloads and unpacks the most recent Index of Gutenberg Books
+
+        Parameters:
+            None
+
+        Return:
+            None
+"""
 def downloadIndex():
-    url = "https://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.zip"
+    url = "https://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.zip" # url to compressed index file, contains rdf files for each book
     if (os.path.isdir("/index")):
         os.rmdir("/index")
     index_dir = wget.download(url)
     #response = request.get(url)
-    with zipfile.ZipFile(index_dir,"r") as zip_ref:
+    with zipfile.ZipFile(index_dir,"r") as zip_ref:   # unzips file
         zip_ref.extractall("index")
     os.remove("rdf-files.tar.zip")
 
@@ -337,14 +381,28 @@ def downloadIndex():
     my_tar.close()
     return
 
+""" Command Line Interface to delete, download, and reparse the index of Gutenberg books
+
+        Parameters:
+            None
+
+        Return:
+            None
+"""
 @app.cli.command('update')
 def force_parse():
-    os.remove("index.json")
+    if (os.path.exists("index.json")):
+        os.remove("index.json") # removes old index
     downloadIndex()
     parseIndex()
-    shutil.rmtree("index")
+    shutil.rmtree("index") # removes large raw index data
     return
 
+""" Returns a numerical histogram of the genres in the index
+
+    URL Parameters:
+        None
+"""
 @app.route('/hist')
 def histogram_genre():
     hist = {}
@@ -366,6 +424,11 @@ def histogram_genre():
     #return json.dumps(hist, indent=4)
     return string_hist
 
+""" Returns a numerical histogram of the library of congress tags in the index
+
+    URL Parameters:
+        None
+"""
 @app.route('/lochist')
 def histogram_loc():
     hist = {}
