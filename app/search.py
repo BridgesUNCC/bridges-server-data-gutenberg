@@ -123,7 +123,7 @@ def lookup(para, ind):
     return found
 
 def build_index():
-    totallen = 0;
+    totallen = 0
     for x in routes.index:
         if (x[1] == None):
             print (x)

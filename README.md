@@ -113,15 +113,55 @@ The data returned is just a plain string that holds the books text
 
 ## Running the server locally
 
-### Install
+### Linux
+
+#### Install
 
 ```
 sudo apt-get install libdb++-dev
 pip3 install flask wget gutenberg_cleaner gutenberg
 ```
 
-### Running it
+#### Running it
 
 ```
+export FLASK_APP=run.py
 flask run  --host=0.0.0.0 --port=9999
+```
+
+### Windows
+
+#### Install
+
+```
+pip install flask wget gutenberg_cleaner gutenberg
+```
+
+#### Running it
+
+```
+set FLASK_APP=run.py
+flask run  --host=0.0.0.0 --port=9999
+```
+or
+```
+set FLASK_APP=run.py
+python -m flask run --host=0.0.0.0 --port=9999
+```
+*The commands for windows may need the python value before them depending on how Windows has python pathed
+
+
+### OS/X
+
+#### Install
+
+```
+pip3 install flask wget gutenberg_cleaner gutenberg
+```
+
+#### Running it
+
+```
+export FLASK_APP=run.py
+python -m flask run --host=0.0.0.0 --port=9999
 ```

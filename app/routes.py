@@ -21,10 +21,12 @@ import zipfile
 import tarfile
 from app import meta
 from app import search
+from werkzeug.exceptions import HTTPException
 
 
 index = [] # entries in the index are arrays where 0 is ID, 1 is title, 2 is lang, 3 is data_added, 4 is authors, 5 is genres, and 6 is loc class
 titles = []
+log_sep = "_________________________________________"
 
 """ Searches the index of books for matching terms then returns a json list
 
@@ -37,13 +39,14 @@ titles = []
 """
 @app.route('/search')
 def data_search_request():
+    logging.info(log_sep)
     mysearch = request.args['search']
     search_type = request.args['type']
     limit = 20
     
     start_time = time.time()
 
-
+    
     data = search.lookup(mysearch, search_type) #search for list of id's
 
     ti = (time.time() - start_time)
@@ -81,6 +84,7 @@ def data_search_request():
 """
 @app.route('/book')
 def downloadBook():
+    logging.info(log_sep)
     num = int(request.args['id'])
     #check for strip parameter
     if 'strip' in request.args:
@@ -126,6 +130,7 @@ def downloadBook():
 """
 @app.route('/meta')
 def meta_id():
+    logging.info(log_sep)
     book_id = int(request.args['id'])
     starttime = time.time()
     ret = meta.get_meta_by_id(book_id)
@@ -371,7 +376,6 @@ def downloadIndex():
     if (os.path.isdir("/index")):
         os.rmdir("/index")
     index_dir = wget.download(url)
-    #response = request.get(url)
     with zipfile.ZipFile(index_dir,"r") as zip_ref:   # unzips file
         zip_ref.extractall("index")
     os.remove("rdf-files.tar.zip")
@@ -391,11 +395,14 @@ def downloadIndex():
 """
 @app.cli.command('update')
 def force_parse():
+    logging.info(log_sep)
+    logging.info("Index Update Starting...")
     if (os.path.exists("index.json")):
         os.remove("index.json") # removes old index
     downloadIndex()
     parseIndex()
     shutil.rmtree("index") # removes large raw index data
+    logging.info("Index Updated")
     return
 
 """ Returns a numerical histogram of the genres in the index
@@ -450,6 +457,15 @@ def histogram_loc():
     #return json.dumps(hist, indent=4)
     return string_hist
 
+
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    if isinstance(e, HTTPException):
+        return e
+    logging.info(e)
+
+'''
 #setting up the server log
 format = logging.Formatter('%(asctime)s %(message)s') 
 
@@ -462,7 +478,12 @@ my_handler.setLevel(logging.ERROR)
 app_log = logging.getLogger('root')
 app_log.setLevel(level=logging.DEBUG)
 
-app_log.addHandler(my_handler)
+app_log.addHandler(my_handler)'''
+
+
+logging.basicConfig(format='%(asctime)s:  %(message)s', filename='log.log', encoding='utf-8', level=logging.INFO)
+logging.info('Server Start Up')
+
 
 os.environ["GUTENBERG_MIRROR"] = 'http://www.gutenberg.org/dirs/'
 loadIndex()
