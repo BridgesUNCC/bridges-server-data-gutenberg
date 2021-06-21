@@ -457,6 +457,20 @@ def histogram_loc():
     #return json.dumps(hist, indent=4)
     return string_hist
 
+""" Command Line Interface to remove the local cache of books
+
+        Parameters:
+            None
+
+        Return:
+            None
+"""
+@app.cli.command('clear')
+def clear_cache():
+    shutil.rmtree("app/books")
+    os.mkdir("app/books")
+    os.remove("lru.json")
+    return
 
 
 @app.errorhandler(Exception)
