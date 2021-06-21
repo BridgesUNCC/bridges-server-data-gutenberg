@@ -3,6 +3,6 @@ __pycache__/
 lru.txt
 data
 hash.txt
-app/epub
+app/books
 index
 lru.json
