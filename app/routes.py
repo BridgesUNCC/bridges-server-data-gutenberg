@@ -472,7 +472,6 @@ def clear_cache():
     os.remove("lru.json")
     return
 
-
 @app.errorhandler(Exception)
 def handle_exception(e):
     if isinstance(e, HTTPException):
@@ -495,7 +494,7 @@ app_log.setLevel(level=logging.DEBUG)
 app_log.addHandler(my_handler)'''
 
 
-logging.basicConfig(format='%(asctime)s:  %(message)s', filename='log.log', encoding='utf-8', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s: %(message)s', filename='log.log', encoding='utf-8', level=logging.INFO)
 logging.info('Server Start Up')
 
 

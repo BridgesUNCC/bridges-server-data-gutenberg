@@ -84,16 +84,25 @@ def lookup(para, ind):
 
     #author list search
     if t == 4:
-        for x in routes.index:
-            for auth in x[t]:
-                flipAuth = auth.split(" ")
-                flipAuthStr = f"{flipAuth[1]} {flipAuth[0]}"
-                if (difflib.SequenceMatcher(None, para, auth).quick_ratio() >= .90 or difflib.SequenceMatcher(None, para, flipAuthStr).quick_ratio() >= .90):
-                    found.append(x)
-                else:
-                    for i in auth.split(' '):
-                        if para == i:
-                            found.append(x)
+        try:
+            for x in routes.index:
+                for auth in x[t]:
+                    if (len(x[1]) == 0):
+                        continue
+                    flipAuth = auth.split(" ")
+                    if len(flipAuth) > 1:
+                        flipAuthStr = f"{flipAuth[1]} {flipAuth[0]}"
+                    else:
+                        flipAuthStr = auth
+                    if (difflib.SequenceMatcher(None, para, auth).quick_ratio() >= .90 or difflib.SequenceMatcher(None, para, flipAuthStr).quick_ratio() >= .90):
+                        found.append(x)
+                    else:
+                        for i in auth.split(' '):
+                            if para == i:
+                                found.append(x)
+        except Exception as e:
+            routes.logging.info(e)
+
     #genre list search
     elif t == 5 or t == 6: 
         for x in routes.index:
