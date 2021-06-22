@@ -39,7 +39,7 @@ log_sep = "_________________________________________"
 """
 @app.route('/search')
 def data_search_request():
-    logging.info(log_sep)
+    app_log.info(log_sep)
     mysearch = request.args['search']
     search_type = request.args['type']
     limit = 20
@@ -84,7 +84,7 @@ def data_search_request():
 """
 @app.route('/book')
 def downloadBook():
-    logging.info(log_sep)
+    app_log.info(log_sep)
     num = int(request.args['id'])
     #check for strip parameter
     if 'strip' in request.args:
@@ -130,7 +130,7 @@ def downloadBook():
 """
 @app.route('/meta')
 def meta_id():
-    logging.info(log_sep)
+    app_log.info(log_sep)
     book_id = int(request.args['id'])
     starttime = time.time()
     ret = meta.get_meta_by_id(book_id)
@@ -395,14 +395,14 @@ def downloadIndex():
 """
 @app.cli.command('update')
 def force_parse():
-    logging.info(log_sep)
-    logging.info("Index Update Starting...")
+    app_log.info(log_sep)
+    app_log.info("Index Update Starting...")
     if (os.path.exists("index.json")):
         os.remove("index.json") # removes old index
     downloadIndex()
     parseIndex()
     shutil.rmtree("index") # removes large raw index data
-    logging.info("Index Updated")
+    app_log.info("Index Updated")
     return
 
 """ Returns a numerical histogram of the genres in the index
@@ -476,9 +476,9 @@ def clear_cache():
 def handle_exception(e):
     if isinstance(e, HTTPException):
         return e
-    logging.info(e)
+    app_log.info(e)
 
-'''
+
 #setting up the server log
 format = logging.Formatter('%(asctime)s %(message)s') 
 
@@ -486,16 +486,16 @@ logFile = 'log.log'
 my_handler = RotatingFileHandler(logFile, mode='a', maxBytes=5*1024*1024,
                                  backupCount=2, encoding=None, delay=0)
 my_handler.setFormatter(format)
-my_handler.setLevel(logging.ERROR)
+my_handler.setLevel(logging.INFO)
 
 app_log = logging.getLogger('root')
-app_log.setLevel(level=logging.DEBUG)
+app_log.setLevel(level=logging.INFO)
 
-app_log.addHandler(my_handler)'''
+app_log.addHandler(my_handler)
 
 
-logging.basicConfig(format='%(asctime)s: %(message)s', filename='log.log', encoding='utf-8', level=logging.INFO)
-logging.info('Server Start Up')
+#logging.basicConfig(format='%(asctime)s: %(message)s', filename='log.log', encoding='utf-8', level=logging.INFO)
+#logging.info('Server Start Up')
 
 
 os.environ["GUTENBERG_MIRROR"] = 'http://www.gutenberg.org/dirs/'

@@ -101,7 +101,7 @@ def lookup(para, ind):
                             if para == i:
                                 found.append(x)
         except Exception as e:
-            routes.logging.info(e)
+            routes.app_log.info(e)
 
     #genre list search
     elif t == 5 or t == 6: 
