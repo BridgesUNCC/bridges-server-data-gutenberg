@@ -114,7 +114,8 @@ def downloadBook():
             f = json.load(json_file)
 
         if (strip == "true"):
-            f["book"] = gutenberg_cleaner.simple_cleaner(f["book"])
+            for book_text in f:
+                f[book_text] = gutenberg_cleaner.simple_cleaner(f[book_text])
     else:
         f = 404
 
