@@ -105,7 +105,7 @@ def downloadBook():
         else:
             data = response.content.decode()
             with open(filename, 'w') as outfile:
-                dict_json = {"book" : data}
+                dict_json = {f"{id}" : data}
                 json.dump(dict_json, outfile)
 
     if error_404 == False:
