@@ -1,6 +1,7 @@
 from app import app
 from flask import request
 from flask import send_file
+from flask import jsonify
 import logging
 from logging.handlers import RotatingFileHandler
 import wget
@@ -28,11 +29,24 @@ index = [] # entries in the index are arrays where 0 is ID, 1 is title, 2 is lan
 titles = []
 log_sep = "_________________________________________"
 
+if os.getenv("META_MAXLIMIT") is not None:
+    maxLimit = int(os.getenv("META_MAXLIMIT"))
+else:
+    maxLimit = 1000
+
+if os.getenv("META_DEFAULT") is not None:
+    defaultLimit = int(os.getenv("META_DEFAULT"))
+else:
+    defaultLimit = 20
+
+
+
 """ Searches the index of books for matching terms then returns a json list
 
     URL Parameters:
         search (String): the string you want to search the index for
         type (String): the string representing the category you want to search through (id, title, language, date, author, genre, loc)
+        limit (int): (OPTIONAL) set the amount of responses you want to get back
 
     Return:
         json string: a json string object that contains a list of found books' meta data
@@ -42,7 +56,15 @@ def data_search_request():
     app_log.info(log_sep)
     mysearch = request.args['search']
     search_type = request.args['type']
-    limit = 20
+    if ("limit" in request.args):
+        metaLimit = int(request.args["limit"])
+    else:
+        metaLimit = defaultLimit
+
+    if (metaLimit <= 0):
+        metaLimit = defaultLimit
+    elif (metaLimit > maxLimit):
+        metaLimit = maxLimit
     
     start_time = time.time()
 
@@ -56,7 +78,7 @@ def data_search_request():
     json_data = {"book_list": []}
     
     for i, d in enumerate(data):
-        if i > limit:
+        if i >= metaLimit:
             break
         book = {}
         book['id'] = d[0]
@@ -71,7 +93,8 @@ def data_search_request():
 
 
 
-    return json.dumps(json_data)
+    #return json.dumps(json_data)
+    return jsonify(json_data)
 
 """ Returns the book text of a certain id
 
@@ -86,7 +109,7 @@ def data_search_request():
 def downloadBook():
     app_log.info(log_sep)
     num = int(request.args['id'])
-    #check for strip parameter
+    #check for strip parameter (optional)
     if 'strip' in request.args:
         strip = request.args['strip'].lower()
     else:
@@ -119,7 +142,8 @@ def downloadBook():
     else:
         f = 404
 
-    return json.dumps(f, indent = 4)
+    #return json.dumps(f, indent = 4)
+    return jsonify(f)
 
 """ Returns the meta data associated with a book id
 
@@ -139,7 +163,7 @@ def meta_id():
         
     print ("processing "+request.url+" in "+ '{0:.6f}'.format(endtime-starttime) +" seconds")
     
-    return ret
+    return jsonify(ret)
 
 """ Parse the downloaded raw rdf index files
 
@@ -473,13 +497,12 @@ def clear_cache():
     os.remove("lru.json")
     return
 
-@app.errorhandler(Exception)
+'''@app.errorhandler(Exception)
 def handle_exception(e):
     if isinstance(e, HTTPException):
         return e
     app_log.info(e)
-
-
+'''
 #setting up the server log
 format = logging.Formatter('%(asctime)s %(message)s') 
 

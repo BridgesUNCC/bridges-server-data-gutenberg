@@ -47,7 +47,7 @@ def title_lookup(para, t):
     for idd, count in candidates:
         # ignore all candidates with less count than 50% of max
         if (count > maxcount / 2):
-            print (idd)
+            #print (idd)
 
             x = meta.id_to_book[int(idd)]
                 
@@ -135,7 +135,7 @@ def build_index():
     totallen = 0
     for x in routes.index:
         if (x[1] == None):
-            print (x)
+            continue
         else:
             if (len(x[1]) < 7):
                 anythingshort.append(x[0])
@@ -160,4 +160,4 @@ def build_index():
                     
             totallen += len(x[1])
 
-    print ("totallen " + str(totallen))
+    print ("total length:  " + str(totallen))

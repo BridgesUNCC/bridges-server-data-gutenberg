@@ -21,7 +21,7 @@ def get_meta_by_id(book_id: int):
         book['loc_class'] = d[6]
         book_json["book_list"].append(book)
         
-        return json.dumps(book_json)
+        return book_json
     except KeyError:
         return "id does not exist" #this should change HTTP return code
 
