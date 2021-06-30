@@ -6,12 +6,11 @@ import logging
 from logging.handlers import RotatingFileHandler
 import wget
 import os
+import time
 import json
 import math
-import time
-import io
+from datetime import datetime
 import shutil
-import pickle
 import gutenberg_cleaner
 #import gutenberg
 import xml.etree.ElementTree as ET
@@ -23,6 +22,7 @@ import tarfile
 from app import meta
 from app import search
 from werkzeug.exceptions import HTTPException
+from apscheduler.schedulers.background import BackgroundScheduler
 
 
 index = [] # entries in the index are arrays where 0 is ID, 1 is title, 2 is lang, 3 is data_added, 4 is authors, 5 is genres, and 6 is loc class
@@ -503,6 +503,23 @@ def handle_exception(e):
         return e
     app_log.info(e)
 '''
+
+def auto_update_check():
+    time_created = datetime.fromtimestamp(os.path.getmtime("index.json"))
+    delta = datetime.now() - time_created
+    if delta.days > 30:
+        app_log.info("Index Update Starting...")
+        if (os.path.exists("index.json")):
+            os.remove("index.json") # removes old index
+        downloadIndex()
+        parseIndex()
+        shutil.rmtree("index") # removes large raw index data
+        app_log.info("Index Updated")
+    return
+
+
+
+
 #setting up the server log
 format = logging.Formatter('%(asctime)s %(message)s') 
 
@@ -516,6 +533,11 @@ app_log = logging.getLogger('root')
 app_log.setLevel(level=logging.INFO)
 
 app_log.addHandler(my_handler)
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=auto_update_check, trigger='interval', hours=6)
+scheduler.start()
 
 
 #logging.basicConfig(format='%(asctime)s: %(message)s', filename='log.log', encoding='utf-8', level=logging.INFO)
