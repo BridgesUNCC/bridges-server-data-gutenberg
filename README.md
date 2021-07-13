@@ -119,7 +119,7 @@ The data returned is just a plain string that holds the books text
 
 ```
 sudo apt-get install libdb++-dev
-pip3 install flask wget gutenberg_cleaner gutenberg
+pip3 install flask wget gutenberg_cleaner gutenberg apschedule
 ```
 
 #### Running it
@@ -134,7 +134,7 @@ flask run  --host=0.0.0.0 --port=9999
 #### Install
 
 ```
-pip install flask wget gutenberg_cleaner gutenberg
+pip install flask wget gutenberg_cleaner gutenberg apschedule
 ```
 
 #### Running it
@@ -156,7 +156,7 @@ python -m flask run --host=0.0.0.0 --port=9999
 #### Install
 
 ```
-pip3 install flask wget gutenberg_cleaner gutenberg
+pip3 install flask wget gutenberg_cleaner gutenberg apscheduler
 ```
 
 #### Running it
