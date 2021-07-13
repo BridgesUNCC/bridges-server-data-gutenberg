@@ -41,15 +41,18 @@ else:
 
 
 
-""" Searches the index of books for matching terms then returns a json list
+""" Search Route
+    get:
+        summary: search book index
+        description: Searches the index of books for matching terms then returns a json list
+        parameters:
+            search (String): the string you want to search the index for
+            type (String): the string representing the category you want to search through (id, title, language, date, author, genre, loc)
+            limit (int): (OPTIONAL) set the amount of responses you want to get back
 
-    URL Parameters:
-        search (String): the string you want to search the index for
-        type (String): the string representing the category you want to search through (id, title, language, date, author, genre, loc)
-        limit (int): (OPTIONAL) set the amount of responses you want to get back
-
-    Return:
-        json string: a json string object that contains a list of found books' meta data
+        responses:
+            200:
+                description: a json string object that contains a list of found books' meta data
 """
 @app.route('/search')
 def data_search_request():
@@ -96,14 +99,18 @@ def data_search_request():
     #return json.dumps(json_data)
     return jsonify(json_data)
 
-""" Returns the book text of a certain id
+""" Book Route
 
-    URL Parameters:
-        id (int): the id of a book you want the text of
-        strip (String): (OPTIONAL), true(default) or false,  cleans up the returned book text to remove all Gutenberg header and footer data
+    get:
+        summary: Book text return
+        description: Returns the book text of a certain id
+        parameters:
+            id (int): the id of a book you want the text of
+            strip (String): (OPTIONAL), true(default) or false,  cleans up the returned book text to remove all Gutenberg header and footer data
 
-    Return:
-        json string: returns the book text within a json string object
+        responses:
+            200:
+                description: json string: returns the book text within a json string object
 """
 @app.route('/book')
 def downloadBook():
@@ -145,13 +152,16 @@ def downloadBook():
     #return json.dumps(f, indent = 4)
     return jsonify(f)
 
-""" Returns the meta data associated with a book id
+""" Meta Route
+    get:   
+        summary: Individual meta data return
+        description: Returns the meta data associated with a book id
+        parameters:
+            id(int): the id of a book you want the meta data of
 
-    URL Parameters:
-        id(int): the id of a book you want the meta data of
-
-    Return:
-        json string: a json string object containing the books meta data
+        responses:
+            200:
+                description: a json string object containing the books meta data
 """
 @app.route('/meta')
 def meta_id():
@@ -430,10 +440,16 @@ def force_parse():
     app_log.info("Index Updated")
     return
 
-""" Returns a numerical histogram of the genres in the index
+""" Hist Route
+    get:   
+        summary: Genre histogram
+        description: Returns a numerical histogram of the genres in the index
+        parameters:
+            None
 
-    URL Parameters:
-        None
+        responses:
+            200:
+                description: json string object containing an ordered histogram of the occurences of genres
 """
 @app.route('/hist')
 def histogram_genre():
@@ -449,17 +465,23 @@ def histogram_genre():
     hist = {k: v for k, v in sorted(hist.items(), key=lambda item: item[1], reverse=True)}
 
 
-    string_hist =  ""
+    '''string_hist =  ""
     for x in hist:
         string_hist = string_hist + f"{x}  :  {hist[x]}<br>"
-
+    '''
     #return json.dumps(hist, indent=4)
-    return string_hist
+    return jsonify(hist)
 
-""" Returns a numerical histogram of the library of congress tags in the index
+""" lochist route
+    get:   
+        summary: Library of Congress histogram
+        description: Returns a numerical histogram of the library of congress(loc) tags in the index
+        parameters:
+            None
 
-    URL Parameters:
-        None
+        responses:
+            200:
+                description: json string object containing an ordered histogram of the occurences of loc genres
 """
 @app.route('/lochist')
 def histogram_loc():

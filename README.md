@@ -165,3 +165,14 @@ pip3 install flask wget gutenberg_cleaner gutenberg
 export FLASK_APP=run.py
 python -m flask run --host=0.0.0.0 --port=9999
 ```
+
+## Command Line Interface
+### Reset local book cache
+```
+flask run clear
+```
+
+### Force Local Book Index Update
+```
+flask run update
+```
