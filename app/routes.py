@@ -45,6 +45,7 @@ else:
     get:
         summary: search book index
         description: Searches the index of books for matching terms then returns a json list
+        path: /search
         parameters:
             search (String): the string you want to search the index for
             type (String): the string representing the category you want to search through (id, title, language, date, author, genre, loc)
@@ -104,6 +105,7 @@ def data_search_request():
     get:
         summary: Book text return
         description: Returns the book text of a certain id
+        path: /book
         parameters:
             id (int): the id of a book you want the text of
             strip (String): (OPTIONAL), true(default) or false,  cleans up the returned book text to remove all Gutenberg header and footer data
@@ -156,6 +158,7 @@ def downloadBook():
     get:   
         summary: Individual meta data return
         description: Returns the meta data associated with a book id
+        path: /meta
         parameters:
             id(int): the id of a book you want the meta data of
 
@@ -444,6 +447,7 @@ def force_parse():
     get:   
         summary: Genre histogram
         description: Returns a numerical histogram of the genres in the index
+        path: /hist
         parameters:
             None
 
@@ -476,6 +480,7 @@ def histogram_genre():
     get:   
         summary: Library of Congress histogram
         description: Returns a numerical histogram of the library of congress(loc) tags in the index
+        path: /lochist
         parameters:
             None
 
