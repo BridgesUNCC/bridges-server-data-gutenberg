@@ -400,9 +400,9 @@ def force_parse():
     app_log.info("Index Update Starting...")
     if (os.path.exists("index.json")):
         os.remove("index.json") # removes old index
-    #downloadIndex()
+    downloadIndex()
     parseIndex()
-    #shutil.rmtree("index") # removes large raw index data
+    shutil.rmtree("index") # removes large raw index data
     app_log.info("Index Updated")
     return
 
