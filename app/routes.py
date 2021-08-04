@@ -6,6 +6,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import wget
 import os
+import sys
 import time
 import json
 import math
@@ -84,6 +85,7 @@ def data_search_request():
     for i, d in enumerate(data):
         if i >= metaLimit:
             break
+
         book = {}
         book['id'] = d[0]
         book['title'] = d[1]
@@ -195,52 +197,6 @@ def parseIndex():
     print("Progress")
     pro = 0
     
-    '''
-    index_dir = "index/catalog.rdf"
-
-    
-    tree = ET.parse(index_dir)
-    root = tree.getroot()
-    
-    for child in root:
-
-        #       ID, TITLE, LANG, ISSUED, CREATORS, GENRES, LoC Class
-        temp = [None, None, None, None, [], [], []]
-        if (child.tag.endswith("etext")):
-            temp[0] = int(child.attrib["{http://www.w3.org/1999/02/22-rdf-syntax-ns#}ID"].replace("etext", ""))
-            for smallerchild in child:
-                if (smallerchild.tag.endswith("title") and not smallerchild.tag.endswith("friendlytitle")):
-                    temp[1] = (smallerchild.text.replace("\n", " "))
-                elif (smallerchild.tag.endswith("language")):
-                    temp[2] = (smallerchild[0][0].text)
-                elif (smallerchild.tag.endswith("created")):
-                    temp[3] = (smallerchild[0][0].text)
-                elif (smallerchild.tag.endswith("creator")):
-                    if (smallerchild.text != None): #checks for single value
-                        temp[4].append(smallerchild.text)
-                    else:
-                        for agent in smallerchild:
-                            if (agent.tag.endswith("li")):
-                                temp[4].append(agent.text)
-
-                elif (smallerchild.tag.endswith("subject")):
-                    for i in smallerchild:
-                        if(i.tag.endswith("LCC")):
-                            temp[6].append(i[0].text)
-                        elif (i.tag.endswith("LCSH")):
-                            temp[5].append(i[0].text)
-                        elif (i.tag.endswith("Bag")):
-                            for x in i:
-                                temp[5].append(x[0][0].text)
-
-
-            index.append(temp)
-            count = count + 1
-    print("Parse Complete")
-    print(f"Total Text Count: {count}")
-
-    '''
-
     for subdirs, dirs, files in os.walk(root):
         for filename in files:
             filepath = subdirs + os.sep + filename
@@ -252,41 +208,48 @@ def parseIndex():
                     print(f"{pro}%")
 
 
-                # ID, TITLE, LANG, ISSUED, CREATORS, GENRES, LoC Class
+                # ID, TITLE, LANG, ISSUED, CREATORS, GENRES, LoC Class, Media Type
                 temp = [None, None, None, None, [], [], []]
                 #TODO: Parse XML Files into index array
                 tree = ET.parse(filepath)
                 root = tree.getroot()
                 #temp.append(root)
+                
+                Sound_Check = None
+                
+                for child in root.iter():
+                    if child.tag.endswith("ebook"):
+                        temp[0] = list(child.attrib.values())[0].split('/')[1]
+                        
+                    if (child.tag.endswith("title")):
+                        temp[1] = (child.text)
+                    elif (child.tag.endswith("issued")):
+                        temp[3] = (child.text)
+                    elif (child.tag.endswith("language")):
+                        temp[2] = child[0][0].text
+                    elif (child.tag.endswith("value") and (child.text == "Text")):  #Sound for audio books
+                        Sound_Check = child.text
+                    elif (child.tag.endswith("subject")): #genre parse
+                        for x in child[0]:
+                            if x.tag.endswith('value'):
+                                if len(x.text) <= 2:
+                                    temp[6].append(x.text)
+                                else:
+                                    temp[5].append(x.text)
 
-                for child in root:
-                    if (child.tag.endswith("ebook")):
-                        temp[0] = (child.attrib.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about").split('/')[1])
-                        count = count + 1
-                        for smallerchild in child:
-                            if (smallerchild.tag.endswith("title")):
-                                temp[1] = (smallerchild.text)
-                            elif (smallerchild.tag.endswith("issued")):
-                                temp[3] = (smallerchild.text)
-                            elif (smallerchild.tag.endswith("language")):
-                                temp[2] = smallerchild[0][0].text
-                            elif (smallerchild.tag.endswith("subject")): #genre parse
-                                for x in smallerchild[0]:
-                                    if x.tag.endswith('value'):
-                                        if len(x.text) <= 2:
-                                            temp[6].append(x.text)
-                                        else:
-                                            temp[5].append(x.text)
+                    elif (child.tag.endswith("creator")):
+                        for agent in child:
+                            for terms in agent:
+                                if (terms.tag.endswith("name")):
+                                    temp[4].append(terms.text)
 
-                            elif (smallerchild.tag.endswith("creator")):
-                                for agent in smallerchild:
-                                    for terms in agent:
-                                        if (terms.tag.endswith("name")):
-                                            temp[4].append(terms.text)
-                                
-                                
+                if Sound_Check == None:
+                    continue
+
                 index.append(temp)
+                count = count + 1
                 root.clear() #GARBAGE COLLECTION
+                #sys.exit()
     print("Parse Complete")
     print(f"Total Text Count: {count}")
 
@@ -437,9 +400,9 @@ def force_parse():
     app_log.info("Index Update Starting...")
     if (os.path.exists("index.json")):
         os.remove("index.json") # removes old index
-    downloadIndex()
+    #downloadIndex()
     parseIndex()
-    shutil.rmtree("index") # removes large raw index data
+    #shutil.rmtree("index") # removes large raw index data
     app_log.info("Index Updated")
     return
 
