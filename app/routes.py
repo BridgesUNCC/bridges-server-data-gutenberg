@@ -119,42 +119,51 @@ def data_search_request():
 @app.route('/book')
 def downloadBook():
     app_log.info(log_sep)
-    num = int(request.args['id'])
+    dict_json = {}
+    num_arg = request.args['id'].split(",")
+    map_obj = map(int, num_arg)
+    num_list = list(map_obj)
     #check for strip parameter (optional)
     if 'strip' in request.args:
         strip = request.args['strip'].lower()
     else:
         strip = "true"
         
+    for num in num_list:     
+        url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
+        filename = f"app/books/{num}.json"
+        os.makedirs(f"app/books/", exist_ok=True)
         
-    url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
-    filename = f"app/books/{num}.json"
-    os.makedirs(f"app/books/", exist_ok=True)
-        
-    error_404 = False
-    if (not bookCheck(num)):
-        response = requests.get(url)
-        if response.status_code == 404: # Checks to see if book url 404s
-            error_404 = True
+        error_404 = False
+        if (not bookCheck(num)):
+            response = requests.get(url)
+            if response.status_code == 404: # Checks to see if book url 404s
+                error_404 = True
+            elif response.status_code == 504: #TODO: change output code to reflect 504 error
+                error_404 = True
+            else:
+                data = response.content.decode()
+                with open(filename, 'w') as outfile:
+                    dict_json[str(num)] = data
+                    temp = {}
+                    temp[str(num)] = data
+                    json.dump(temp, outfile)
         else:
-            data = response.content.decode()
-            with open(filename, 'w') as outfile:
-                dict_json = {f"{num}" : data}
-                json.dump(dict_json, outfile)
+            if error_404 == False:
+                LRU(num)
+                with open(filename) as json_file:
+                    dict_json.update(json.load(json_file))
+            else:
+                dict_json[str(num)] = "404 ERROR"
 
-    if error_404 == False:
-        LRU(num)
-        with open(filename) as json_file:
-            f = json.load(json_file)
 
         if (strip == "true"):
-            for book_text in f:
-                f[book_text] = gutenberg_cleaner.simple_cleaner(f[book_text])
-    else:
-        f = 404
+            for book_text in dict_json:
+                dict_json[book_text] = gutenberg_cleaner.simple_cleaner(dict_json[book_text])
+
 
     #return json.dumps(f, indent = 4)
-    return jsonify(f)
+    return jsonify(dict_json)
 
 """ Meta Route
     get:   
@@ -280,7 +289,7 @@ def parseIndex():
             boolean: returns if the book exists or not
 """
 def bookCheck(num):
-    return os.path.exists(f"app/books/{num}.txt")
+    return os.path.exists(f"app/books/{num}.json")
 
 """ Loads the locally saved index file
 
