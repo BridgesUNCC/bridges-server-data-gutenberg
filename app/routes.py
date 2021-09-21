@@ -208,7 +208,7 @@ def parseIndex():
                     print(f"{pro}%")
 
 
-                # ID, TITLE, LANG, ISSUED, CREATORS, GENRES, LoC Class, Media Type
+                # ID, TITLE, LANG, ISSUED, CREATORS, GENRES, LoC Class
                 temp = [None, None, None, None, [], [], []]
                 #TODO: Parse XML Files into index array
                 tree = ET.parse(filepath)
@@ -249,7 +249,7 @@ def parseIndex():
                 index.append(temp)
                 count = count + 1
                 root.clear() #GARBAGE COLLECTION
-                #sys.exit()
+                
     print("Parse Complete")
     print(f"Total Text Count: {count}")
 
@@ -280,7 +280,7 @@ def parseIndex():
             boolean: returns if the book exists or not
 """
 def bookCheck(num):
-    return os.path.exists(f"app/books/{num}.txt")
+    return os.path.exists(f"app/books/{num}.json")
 
 """ Loads the locally saved index file
 
@@ -341,8 +341,8 @@ def LRU(key):
     lru.insert(0, key)
 
     if (len(lru) == 200):
-        if (os.path.isfile(f"app/books/{lru[len(lru) - 1]}.txt")):
-            os.remove(f"app/books/{lru[len(lru) - 1]}.txt")
+        if (os.path.isfile(f"app/books/{lru[len(lru) - 1]}.json")):
+            os.remove(f"app/books/{lru[len(lru) - 1]}.json")
             del lru[len(lru) - 1]
 
     #save lru
@@ -378,6 +378,7 @@ def downloadIndex():
         os.rmdir("/index")
     index_dir = wget.download(url)
     with zipfile.ZipFile(index_dir,"r") as zip_ref:   # unzips file
+        app_log.info("Uncompressing Index Files (May take awhile)")
         zip_ref.extractall("index")
     os.remove("rdf-files.tar.zip")
 
