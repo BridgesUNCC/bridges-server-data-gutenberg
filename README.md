@@ -169,10 +169,10 @@ python -m flask run --host=0.0.0.0 --port=9999
 ## Command Line Interface
 ### Reset local book cache
 ```
-flask run clear
+flask clear
 ```
 
 ### Force Local Book Index Update
 ```
-flask run update
+flask update
 ```
