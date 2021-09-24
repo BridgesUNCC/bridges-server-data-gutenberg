@@ -13,7 +13,10 @@ import math
 from datetime import datetime
 import shutil
 import gutenberg_cleaner
-#import gutenberg
+
+import epub_conversion
+from epub_conversion.utils import open_book, convert_epub_to_lines
+
 import xml.etree.ElementTree as ET
 import requests
 import re
@@ -123,40 +126,59 @@ def downloadBook():
     num_arg = request.args['id'].split(",")
     map_obj = map(int, num_arg)
     num_list = list(map_obj)
+    os.makedirs(f"app/books/", exist_ok=True)
     #check for strip parameter (optional)
     if 'strip' in request.args:
         strip = request.args['strip'].lower()
     else:
         strip = "true"
         
-    for num in num_list:     
+    for num in num_list:
         url = f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.txt"
         filename = f"app/books/{num}.json"
-        os.makedirs(f"app/books/", exist_ok=True)
-        
-        error_404 = False
-        if (not bookCheck(num)):
-            response = requests.get(url)
-            if response.status_code == 404: # Checks to see if book url 404s
-                error_404 = True
-            elif response.status_code == 504: #TODO: change output code to reflect 504 error
-                error_404 = True
-            else:
-                data = response.content.decode()
-                with open(filename, 'w') as outfile:
-                    dict_json[str(num)] = data
-                    temp = {}
-                    temp[str(num)] = data
-                    json.dump(temp, outfile)
-        else:
-            if error_404 == False:
+        if (not(bookCheck(num))):
+            try:
+                response = requests.get(url)
+                if (response.status_code == 404): #if txt file doesnt exsist, check for epub
+                    response = requests.get(f"https://www.gutenberg.org/cache/epub/{num}/pg{num}.epub")
+                    response.raise_for_status()
+                    app_log.info("Converting epub...")
+                    print("Converting epub...")
+                    os.makedirs(f"app/tmp/", exist_ok=True)
+                    with open("app/tmp/temp.epub", "wb") as f:
+                        f.write(response.content)
+                        f.close()
+                    book = open_book("app/tmp/temp.epub")
+                    lines = convert_epub_to_lines(book)
+                    data = ' '.join(lines)
+                    book.close()
+                    cleanr = re.compile('<.*?>') #removes html encoding
+                    data = re.sub(cleanr, '', data)
+                    shutil.rmtree("app/tmp")
+
+                else:
+                    response.raise_for_status()
+                    data = response.content.decode()
+
+            except requests.exceptions.HTTPError as a:
+                app_log.info(a)
+                return a
+            except requests.exceptions.RequestException as e:
+                app_log.info(e)
+                return e
+            
+            
+            with open(filename, 'w') as outfile:
+                dict_json[str(num)] = data
+                temp = {}
+                temp[str(num)] = data
+                json.dump(temp, outfile)
                 LRU(num)
-                with open(filename) as json_file:
-                    dict_json.update(json.load(json_file))
-            else:
-                dict_json[str(num)] = "404 ERROR"
-
-
+        else:
+            LRU(num)
+            with open(filename) as json_file:
+                dict_json.update(json.load(json_file))
+    
         if (strip == "true"):
             for book_text in dict_json:
                 dict_json[book_text] = gutenberg_cleaner.simple_cleaner(dict_json[book_text])
