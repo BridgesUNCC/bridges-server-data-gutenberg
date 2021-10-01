@@ -150,7 +150,7 @@ def downloadBook():
                         f.close()
                     book = open_book("app/tmp/temp.epub")
                     lines = convert_epub_to_lines(book)
-                    data = ' '.join(lines)
+                    data = '\n '.join(lines)
                     book.close()
                     cleanr = re.compile('<.*?>') #removes html encoding
                     data = re.sub(cleanr, '', data)
