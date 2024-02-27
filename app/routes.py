@@ -362,9 +362,16 @@ def loadIndex():
 def LRU(key):
     lru = []
     #load lru
-    if os.path.isfile("lru.json"):
-        with open("lru.json") as f:
-            lru = json.load(f)
+    try:
+        if os.path.isfile("lru.json"):
+            with open("lru.json") as f:
+                lru = json.load(f)
+    except:
+        # can't load LRU for some reason. defaulting to empty string
+        # This will cause some memory leak, so printing warning
+        lru = []
+        app_log.info("Couldn't open LRU log file. Trimming. (This may cause a disk leak as caches won't get cleaned up properly)")
+
 
     #checks if key is in LRU list
     if (key in lru):
